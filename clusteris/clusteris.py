@@ -3,6 +3,10 @@
 import wx
 import wx.xrc
 
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
 class frameMain (wx.Frame):
 
     def __init__(self, parent):
@@ -12,6 +16,7 @@ class frameMain (wx.Frame):
         self.firstLineFeatures = False
         self.datasetLines = 0
         self.datasetAttributes = 0
+        self.samples = []
 
         self.BuildMainUI(parent)
 
@@ -77,6 +82,8 @@ class frameMain (wx.Frame):
 
         sbSizerProcess.Add(bSizerAlgorithm, 1, wx.ALL|wx.EXPAND, 0)
 
+        self.BuildParamsUI(sbSizerProcess)
+
         container.Add(sbSizerProcess, 1, wx.ALL|wx.EXPAND, 5)
 
     def BuildActionUI(self, container):
@@ -84,6 +91,8 @@ class frameMain (wx.Frame):
 
         self.m_buttonProcess = wx.Button(self.panelMain, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
         bSizerAction.Add(self.m_buttonProcess, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+
+        self.Bind(wx.EVT_BUTTON, self.ProcessDataset, self.m_buttonProcess)
 
         container.Add(bSizerAction, 0, wx.EXPAND, 0)
 
@@ -104,7 +113,7 @@ class frameMain (wx.Frame):
     def BuildDatasetFormatUI(self, container):
         bSizerSizerColumns = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.m_checkBoxColumns = wx.CheckBox(container.GetStaticBox(), wx.ID_ANY, u"Procesar primera fila como nombres", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.m_checkBoxColumns = wx.CheckBox(container.GetStaticBox(), wx.ID_ANY, u"Procesar primera fila como títulos de atributos", wx.DefaultPosition, wx.DefaultSize, 0)
         bSizerSizerColumns.Add(self.m_checkBoxColumns, 0, wx.ALL, 5)
 
         self.Bind(wx.EVT_CHECKBOX, self.ToggleFirstLineFeatures)
@@ -125,6 +134,18 @@ class frameMain (wx.Frame):
 
 
         container.Add(bSizerDatasetStats, 0, wx.ALL, 0)
+
+    def BuildParamsUI(self, container):
+        bSizerParamK = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.m_staticTextParamK = wx.StaticText( container.GetStaticBox(), wx.ID_ANY, u"Centroides", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticTextParamK.Wrap( -1 )
+        bSizerParamK.Add( self.m_staticTextParamK, 1, wx.ALL, 10 )
+
+        self.m_spinCtrlParamK = wx.SpinCtrl( container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 2, 10, 0 )
+        bSizerParamK.Add( self.m_spinCtrlParamK, 1, wx.ALL, 5 )
+
+        container.Add( bSizerParamK, 1, wx.EXPAND, 0 )
 
     def ShowFileDialog(self, evt):
 
@@ -147,6 +168,28 @@ class frameMain (wx.Frame):
         self.ParseDatasetPath(fileDialog.GetPath())
 
         fileDialog.Destroy()
+
+    def ProcessDataset(self, evt):
+        with open(self.datasetPath) as dataset:
+            for line in dataset:
+                sample = line.strip().split()
+                self.samples.append(sample)
+
+        self.ShowDatasetPlot()
+
+    def ShowDatasetPlot(self):
+        matplotlib.rcParams['axes.unicode_minus'] = False
+        eje_x = 0
+        eje_y = 0
+        for sample in self.samples:
+            if float(sample[0]) > eje_x:
+                eje_x = float(sample[0])
+            if float(sample[1]) > eje_y:
+                eje_y = float(sample[1])
+            plt.plot(float(sample[0]), float(sample[1]), 'ro')
+            # Ejes hasta +5 del mayor punto del dataset
+            plt.axis([0, int(eje_x)+5, 0, int(eje_y)+5])
+        plt.show()
 
     def ParseDatasetPath(self, path):
         print(path)
