@@ -116,16 +116,16 @@ class MainView (wx.Frame):
         container.Add(bSizerDatasetStats, 0, wx.ALL, 0)
 
     def BuildParamsUI(self, container):
-        bSizerParamK = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.labelCentroids = wx.StaticText( container.GetStaticBox(), wx.ID_ANY, u"Centroides", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.labelCentroids.Wrap( -1 )
-        bSizerParamK.Add( self.labelCentroids, 1, wx.ALL, 10 )
+        self.labelCentroids = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Centroides", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelCentroids.Wrap(-1)
+        bSizerParamK.Add(self.labelCentroids, 1, wx.ALL, 10)
 
-        self.spinCentroidsParam = wx.SpinCtrl( container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 2, 10, 0 )
-        bSizerParamK.Add( self.spinCentroidsParam, 1, wx.ALL, 5 )
+        self.spinCentroidsParam = wx.SpinCtrl(container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 2, 10, 0)
+        bSizerParamK.Add(self.spinCentroidsParam, 1, wx.ALL, 5)
 
-        container.Add( bSizerParamK, 1, wx.ALL|wx.EXPAND, 0 )
+        container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
 
     def Start(self):
         self.app.MainLoop()
