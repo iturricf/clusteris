@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+
+class Params():
+
+    CENTROID_MIN_VALUE = 2
+    CENTROID_MAX_VALUE = 10
+    CENTROID_DEFAULT_VALUE = 2
+
+    DATASET_PARSE_FEATURES_DEFAULT_VALUE = False
+
+    CLUSTERING_ALGORITHMS = [u"Ninguno", u"K-means", u"Algoritmo Genético"]
+    CLUSTERING_PROCESSORS = []
+
+    CLUSTERING_ALGORITHM_DEFAULT = 0

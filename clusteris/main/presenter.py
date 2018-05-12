@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 
 class Presenter(object):
 
-    def __init__(self, view, interactor):
+    def __init__(self, view, interactor, params):
         self.view = view
         self.interactor = interactor
+        self.params = params
 
         interactor.Install(self, view)
 
@@ -25,12 +26,14 @@ class Presenter(object):
         self.samples = []
 
     def InitView(self):
-        self.view.SetParseFeaturesCheckbox(False)
+        self.view.SetParseFeaturesCheckbox(self.params.DATASET_PARSE_FEATURES_DEFAULT_VALUE)
         self.view.SetLabelSamplesCountText('Cantidad de muestras: N/A')
         self.view.SetLabelFeaturesCountText('Cantidad de atributos: N/A')
         self.view.SetStatusBarText('Archivo dataset: No seleccionado.')
-        self.view.SetCentroidSpinValue(5)
-        self.view.SetAlgorithmSelection(0)
+        self.view.SetCentroidSpinRange(self.params.CENTROID_MIN_VALUE, self.params.CENTROID_MAX_VALUE)
+        self.view.SetCentroidSpinValue(self.params.CENTROID_DEFAULT_VALUE)
+        self.view.SetAlgorithmList(self.params.CLUSTERING_ALGORITHMS)
+        self.view.SetAlgorithmSelection(self.params.CLUSTERING_ALGORITHM_DEFAULT)
 
     def ShowFileDialog(self):
         self.view.ShowFileDialog()

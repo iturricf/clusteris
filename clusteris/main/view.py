@@ -5,6 +5,7 @@ import wx.lib.newevent
 
 class MainView (wx.Frame):
 
+    # Custom Events for FileDialog file selection
     FileSelectedEvent, EVT_FILE_SELECTED = wx.lib.newevent.NewEvent()
 
     def __init__(self, parent):
@@ -12,13 +13,13 @@ class MainView (wx.Frame):
 
         self.BuildMainUI(parent)
 
-    ## Initialize main UI
+    # Initialize main UI
     def BuildMainUI(self, parent):
         wx.Frame.__init__(self, parent, id = wx.ID_ANY, title = u"ClusteRIS", pos = wx.DefaultPosition, size = wx.Size(-1,-1), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL)
 
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 
-        sizerMain = wx.BoxSizer(wx.VERTICAL)
+        self.sizerMain = wx.BoxSizer(wx.VERTICAL)
 
         self.panelMain = wx.Panel(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
 
@@ -34,18 +35,13 @@ class MainView (wx.Frame):
         self.panelMain.SetSizer(bSizerPanel)
         self.panelMain.Layout()
         bSizerPanel.Fit(self.panelMain)
-        sizerMain.Add(self.panelMain, 1, wx.EXPAND|wx.ALL, 0)
+        self.sizerMain.Add(self.panelMain, 1, wx.EXPAND|wx.ALL, 0)
 
-        self.SetSizer(sizerMain)
+        self.SetSizer(self.sizerMain)
         self.Layout()
 
-        sizerMain.Fit(self)
-
-        ## Add status bar
+        # Add status bar
         self.statusBar = self.CreateStatusBar(1, wx.STB_SIZEGRIP, wx.ID_ANY)
-
-        self.Centre(wx.BOTH)
-        self.Show(True)
 
     def BuildDatasetUI(self, container):
         sbSizerDataset = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Dataset"), wx.VERTICAL)
@@ -65,9 +61,7 @@ class MainView (wx.Frame):
         self.labelAlgorithm.Wrap(-1)
         bSizerAlgorithm.Add(self.labelAlgorithm, 1, wx.ALL|wx.EXPAND, 10)
 
-        m_choiceAlgorithmChoices = [ u"Ninguno", u"K-means", u"Algoritmo Genético" ]
-        self.choiceAlgorithm = wx.Choice(sbSizerProcess.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_choiceAlgorithmChoices, 0)
-        self.choiceAlgorithm.SetSelection(0)
+        self.choiceAlgorithm = wx.Choice(sbSizerProcess.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, [], 0)
         bSizerAlgorithm.Add(self.choiceAlgorithm, 1, wx.ALL, 5)
 
         sbSizerProcess.Add(bSizerAlgorithm, 1, wx.ALL|wx.EXPAND, 0)
@@ -124,7 +118,7 @@ class MainView (wx.Frame):
         self.labelCentroids.Wrap(-1)
         bSizerParamK.Add(self.labelCentroids, 1, wx.ALL, 10)
 
-        self.spinCentroidsParam = wx.SpinCtrl(container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 2, 10, 0)
+        self.spinCentroidsParam = wx.SpinCtrl(container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
         bSizerParamK.Add(self.spinCentroidsParam, 1, wx.ALL, 5)
 
         container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
@@ -141,8 +135,14 @@ class MainView (wx.Frame):
     def SetStatusBarText(self, value):
         self.statusBar.SetStatusText(value)
 
+    def SetCentroidSpinRange(self, min, max):
+        self.spinCentroidsParam.SetRange(min, max)
+
     def SetCentroidSpinValue(self, value):
         self.spinCentroidsParam.SetValue(value)
+
+    def SetAlgorithmList(self, value):
+        self.choiceAlgorithm.SetItems(value)
 
     def SetAlgorithmSelection(self, value):
         self.choiceAlgorithm.SetSelection(value)
@@ -164,6 +164,7 @@ class MainView (wx.Frame):
             print ("DEBUG - Open Dataset cancelled by user.")
             return
 
+        # Notify FileDialog custom FileSelectedEvent with corresponding path
         wx.PostEvent(self, self.FileSelectedEvent(path=fileDialog.GetPath()))
 
         fileDialog.Destroy()
@@ -172,6 +173,10 @@ class MainView (wx.Frame):
         wx.LogError(message)
 
     def Start(self):
+        self.sizerMain.Fit(self)
+        self.Centre(wx.BOTH)
+        self.Show(True)
+
         self.app.MainLoop()
 
     def __del__(self):
