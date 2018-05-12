@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import wx
+import wx.lib.newevent
 
 class MainView (wx.Frame):
 
-    def __init__(self, parent):
+    FileSelectedEvent, EVT_FILE_SELECTED = wx.lib.newevent.NewEvent()
 
+    def __init__(self, parent):
         self.app = wx.App(0)
 
         self.BuildMainUI(parent)
@@ -144,6 +146,30 @@ class MainView (wx.Frame):
 
     def SetAlgorithmSelection(self, value):
         self.choiceAlgorithm.SetSelection(value)
+
+    def ShowFileDialog(self):
+        wildcard = "Comma separated values files (*.csv)|*.csv|" \
+                   "Text files (*.txt)|*.txt|" \
+                   "All files (*.*)|*.*"
+
+        fileDialog = wx.FileDialog(
+            self,
+            message='Please select a dataset file...',
+            wildcard=wildcard,
+            style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR|
+                  wx.FD_PREVIEW
+           )
+
+        if fileDialog.ShowModal() == wx.ID_CANCEL:
+            print ("DEBUG - Open Dataset cancelled by user.")
+            return
+
+        wx.PostEvent(self, self.FileSelectedEvent(path=fileDialog.GetPath()))
+
+        fileDialog.Destroy()
+
+    def ShowErrorMessage(self, message):
+        wx.LogError(message)
 
     def Start(self):
         self.app.MainLoop()

@@ -13,30 +13,13 @@ class Interactor(object):
         view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
         view.choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
         view.spinCentroidsParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
+        view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
 
     def OnFileSelectorClicked(self, evt):
-        wildcard = "Comma separated values files (*.csv)|*.csv|" \
-                   "Text files (*.txt)|*.txt|" \
-                   "All files (*.*)|*.*"
+        self.presenter.ShowFileDialog()
 
-        fileDialog = wx.FileDialog(
-            self.view,
-            message='Please select a dataset file...',
-            wildcard=wildcard,
-            style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR|
-                  wx.FD_PREVIEW
-           )
-
-        if fileDialog.ShowModal() == wx.ID_CANCEL:
-            print ("DEBUG - Open Dataset cancelled by user.")
-            return
-
-        self.OnFileSelected(fileDialog.GetPath())
-
-        fileDialog.Destroy()
-
-    def OnFileSelected(self, path):
-        self.presenter.SetSelectedFile(path)
+    def OnFileSelected(self, evt):
+        self.presenter.SetSelectedFile(evt.path)
 
     def OnParseAttributesToggle(self, evt):
         self.presenter.ToggleParseAttributes(evt.IsChecked())

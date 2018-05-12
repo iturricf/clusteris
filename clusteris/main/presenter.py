@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import wx
-
-# import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -35,6 +32,9 @@ class Presenter(object):
         self.view.SetCentroidSpinValue(5)
         self.view.SetAlgorithmSelection(0)
 
+    def ShowFileDialog(self):
+        self.view.ShowFileDialog()
+
     def SetSelectedFile(self, path):
         print('DEBUG - Selected path: %s' % path)
 
@@ -54,7 +54,7 @@ class Presenter(object):
 
                 self.datasetPath = path
         except IOError:
-            wx.LogError("Error al abrir el archivo '%s'." % path)
+            self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % path)
 
     def ToggleParseAttributes(self, isChecked):
         print('DEBUG - Parse attributes: %s' % isChecked)
@@ -84,7 +84,7 @@ class Presenter(object):
                     sample = line.strip().split()
                     self.samples.append(sample)
         except IOError:
-            wx.LogError("Error al abrir el archivo '%s'." % path)
+            self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % path)
 
         self._ShowDatasetPlot()
 
