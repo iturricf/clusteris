@@ -24,16 +24,16 @@ class Presenter(object):
         self.datasetPath = ""
         self.parseAttributes = False
         self.datasetSamplesCount = 0
-        self.datasetAttributesCount = 0
+        self.datasetFeaturesCount = 0
         self.samples = []
 
     def InitView(self):
-        self.view.m_checkBoxColumns.SetValue(False)
-        self.view.m_staticTextRows.SetLabel('Cantidad de muestras: N/A')
-        self.view.m_staticTextFeatures.SetLabel('Cantidad de atributos: N/A')
-        self.view.m_statusBar.SetStatusText('Archivo dataset: No seleccionado.')
-        self.view.m_spinCtrlParamK.SetValue(5)
-        self.view.m_choiceAlgorithm.SetSelection(0)
+        self.view.checkParseFeatures.SetValue(False)
+        self.view.labelSamplesCount.SetLabel('Cantidad de muestras: N/A')
+        self.view.labelFeaturesCount.SetLabel('Cantidad de atributos: N/A')
+        self.view.statusBar.SetStatusText('Archivo dataset: No seleccionado.')
+        self.view.spinCentroidsParam.SetValue(5)
+        self.view.choiceAlgorithm.SetSelection(0)
 
     def SetSelectedFile(self, path):
         print('DEBUG - Selected path: %s' % path)
@@ -43,14 +43,14 @@ class Presenter(object):
                 lines = dataset.readlines();
 
                 self.datasetSamplesCount = len(lines) - int(self.parseAttributes)
-                self.datasetAttributesCount = self._GetDatesetFeaturesAmount(lines[0].strip())
+                self.datasetFeaturesCount = self._GetDatesetFeaturesAmount(lines[0].strip())
 
                 print('DEBUG - Dataset samples: %d' % self.datasetSamplesCount)
-                print('DEBUG - Dataset attributes: %d' % self.datasetAttributesCount)
+                print('DEBUG - Dataset attributes: %d' % self.datasetFeaturesCount)
 
-                self.view.m_staticTextRows.SetLabel('Cantidad de muestras: %d' % self.datasetSamplesCount)
-                self.view.m_staticTextFeatures.SetLabel('Cantidad de atributos: %d' % self.datasetAttributesCount)
-                self.view.m_statusBar.SetStatusText('Archivo dataset: %s' % path)
+                self.view.labelSamplesCount.SetLabel('Cantidad de muestras: %d' % self.datasetSamplesCount)
+                self.view.labelFeaturesCount.SetLabel('Cantidad de atributos: %d' % self.datasetFeaturesCount)
+                self.view.statusBar.SetStatusText('Archivo dataset: %s' % path)
 
                 self.datasetPath = path
         except IOError:

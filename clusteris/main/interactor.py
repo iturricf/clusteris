@@ -8,11 +8,11 @@ class Interactor(object):
         self.presenter = presenter
         self.view = view
 
-        view.m_buttonDataset.Bind(wx.EVT_BUTTON, self.OnFileSelectorClicked)
-        view.m_checkBoxColumns.Bind(wx.EVT_CHECKBOX, self.OnParseAttributesToggle)
-        view.m_buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
-        view.m_choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
-        view.m_spinCtrlParamK.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
+        view.buttonSelectDataset.Bind(wx.EVT_BUTTON, self.OnFileSelectorClicked)
+        view.checkParseFeatures.Bind(wx.EVT_CHECKBOX, self.OnParseAttributesToggle)
+        view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
+        view.choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
+        view.spinCentroidsParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
 
     def OnFileSelectorClicked(self, evt):
         wildcard = "Comma separated values files (*.csv)|*.csv|" \
