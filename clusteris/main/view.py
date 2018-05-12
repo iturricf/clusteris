@@ -152,22 +152,21 @@ class MainView (wx.Frame):
                    "Text files (*.txt)|*.txt|" \
                    "All files (*.*)|*.*"
 
-        fileDialog = wx.FileDialog(
+        with  wx.FileDialog(
             self,
             message='Please select a dataset file...',
             wildcard=wildcard,
             style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR|
                   wx.FD_PREVIEW
-           )
+           ) as fileDialog:
 
-        if fileDialog.ShowModal() == wx.ID_CANCEL:
-            print ("DEBUG - Open Dataset cancelled by user.")
-            return
 
-        # Notify FileDialog custom FileSelectedEvent with corresponding path
-        wx.PostEvent(self, self.FileSelectedEvent(path=fileDialog.GetPath()))
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                print ("DEBUG - Open Dataset cancelled by user.")
+                return
 
-        fileDialog.Destroy()
+            # Notify FileDialog custom FileSelectedEvent with corresponding path
+            wx.PostEvent(self, self.FileSelectedEvent(path=fileDialog.GetPath()))
 
     def ShowErrorMessage(self, message):
         wx.LogError(message)
