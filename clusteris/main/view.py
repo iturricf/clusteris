@@ -127,6 +127,24 @@ class MainView (wx.Frame):
 
         container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
 
+    def SetParseFeaturesCheckbox(self, value):
+        self.checkParseFeatures.SetValue(value)
+
+    def SetLabelSamplesCountText(self, value):
+        self.labelSamplesCount.SetLabel(value)
+
+    def SetLabelFeaturesCountText(self, value):
+        self.labelFeaturesCount.SetLabel(value)
+
+    def SetStatusBarText(self, value):
+        self.statusBar.SetStatusText(value)
+
+    def SetCentroidSpinValue(self, value):
+        self.spinCentroidsParam.SetValue(value)
+
+    def SetAlgorithmSelection(self, value):
+        self.choiceAlgorithm.SetSelection(value)
+
     def Start(self):
         self.app.MainLoop()
 

@@ -28,12 +28,12 @@ class Presenter(object):
         self.samples = []
 
     def InitView(self):
-        self.view.checkParseFeatures.SetValue(False)
-        self.view.labelSamplesCount.SetLabel('Cantidad de muestras: N/A')
-        self.view.labelFeaturesCount.SetLabel('Cantidad de atributos: N/A')
-        self.view.statusBar.SetStatusText('Archivo dataset: No seleccionado.')
-        self.view.spinCentroidsParam.SetValue(5)
-        self.view.choiceAlgorithm.SetSelection(0)
+        self.view.SetParseFeaturesCheckbox(False)
+        self.view.SetLabelSamplesCountText('Cantidad de muestras: N/A')
+        self.view.SetLabelFeaturesCountText('Cantidad de atributos: N/A')
+        self.view.SetStatusBarText('Archivo dataset: No seleccionado.')
+        self.view.SetCentroidSpinValue(5)
+        self.view.SetAlgorithmSelection(0)
 
     def SetSelectedFile(self, path):
         print('DEBUG - Selected path: %s' % path)
@@ -48,9 +48,9 @@ class Presenter(object):
                 print('DEBUG - Dataset samples: %d' % self.datasetSamplesCount)
                 print('DEBUG - Dataset attributes: %d' % self.datasetFeaturesCount)
 
-                self.view.labelSamplesCount.SetLabel('Cantidad de muestras: %d' % self.datasetSamplesCount)
-                self.view.labelFeaturesCount.SetLabel('Cantidad de atributos: %d' % self.datasetFeaturesCount)
-                self.view.statusBar.SetStatusText('Archivo dataset: %s' % path)
+                self.view.SetLabelSamplesCountText('Cantidad de muestras: %d' % self.datasetSamplesCount)
+                self.view.SetLabelFeaturesCountText('Cantidad de atributos: %d' % self.datasetFeaturesCount)
+                self.view.SetStatusText('Archivo dataset: %s' % path)
 
                 self.datasetPath = path
         except IOError:
