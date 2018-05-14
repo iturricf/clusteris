@@ -4,16 +4,23 @@ import wx
 import wx.lib.newevent
 
 class MainView (wx.Frame):
+    """
+    MainView is the main UI responsible. Shows dataset, processor and params
+    related info.
 
-    # Custom Events for FileDialog file selection
+    Provides public methods for asigning UI values from Presenter and dispatches
+    user related actions events to be processed by associated Presenter class.
+    """
+
+    # Custom Events for dataset file selection
     FileSelectedEvent, EVT_FILE_SELECTED = wx.lib.newevent.NewEvent()
 
     def __init__(self, parent):
+        """Constructor. Initializes the wxPython app and Builds main UI."""
         self.app = wx.App(0)
 
         self.BuildMainUI(parent)
 
-    # Initialize main UI
     def BuildMainUI(self, parent):
         wx.Frame.__init__(self, parent, id = wx.ID_ANY, title = u"ClusteRIS", pos = wx.DefaultPosition, size = wx.Size(-1,-1), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL)
 
@@ -44,6 +51,7 @@ class MainView (wx.Frame):
         self.statusBar = self.CreateStatusBar(1, wx.STB_SIZEGRIP, wx.ID_ANY)
 
     def BuildDatasetUI(self, container):
+        """Builds dataset file selection UI."""
         sbSizerDataset = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Dataset"), wx.VERTICAL)
 
         self.BuildFileSelectionUI(sbSizerDataset)
@@ -53,6 +61,7 @@ class MainView (wx.Frame):
         container.Add(sbSizerDataset, 0, wx.ALL|wx.EXPAND, 5)
 
     def BuildProcessUI(self, container):
+        """Builds cluster processing parameters UI."""
         sbSizerProcess = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Procesamiento"), wx.VERTICAL)
 
         bSizerAlgorithm = wx.BoxSizer(wx.HORIZONTAL)
@@ -71,6 +80,7 @@ class MainView (wx.Frame):
         container.Add(sbSizerProcess, 1, wx.ALL|wx.EXPAND, 5)
 
     def BuildActionUI(self, container):
+        """The action button UI. Start processing the dataset."""
         bSizerAction = wx.BoxSizer(wx.VERTICAL)
 
         self.buttonProcess = wx.Button(self.panelMain, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -79,6 +89,7 @@ class MainView (wx.Frame):
         container.Add(bSizerAction, 0, wx.EXPAND, 0)
 
     def BuildFileSelectionUI(self, container):
+        """Dataset file select."""
         bSizerDatasetFileSelection = wx.BoxSizer(wx.HORIZONTAL)
 
         self.labelSelectDataset = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Seleccionar archivo", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -91,6 +102,7 @@ class MainView (wx.Frame):
         container.Add(bSizerDatasetFileSelection, 0, wx.EXPAND, 0)
 
     def BuildDatasetFormatUI(self, container):
+        """Dataset file options."""
         bSizerSizerColumns = wx.BoxSizer(wx.HORIZONTAL)
 
         self.checkParseFeatures = wx.CheckBox(container.GetStaticBox(), wx.ID_ANY, u"Procesar primera fila como títulos de atributos", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -99,6 +111,7 @@ class MainView (wx.Frame):
         container.Add(bSizerSizerColumns, 0, wx.ALL, 0)
 
     def BuildDatasetStatsUI(self, container):
+        """Dataset file stats."""
         bSizerDatasetStats = wx.BoxSizer(wx.VERTICAL)
 
         self.labelSamplesCount = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Cantidad de muestras: {#}", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -112,6 +125,7 @@ class MainView (wx.Frame):
         container.Add(bSizerDatasetStats, 0, wx.ALL, 0)
 
     def BuildParamsUI(self, container):
+        """Processing params."""
         bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
 
         self.labelCentroids = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Centroides", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -148,6 +162,8 @@ class MainView (wx.Frame):
         self.choiceAlgorithm.SetSelection(value)
 
     def ShowFileDialog(self):
+        """Shows file dialog and dispatch custom event after dataset file is selected."""
+
         wildcard = "Comma separated values files (*.csv)|*.csv|" \
                    "Text files (*.txt)|*.txt|" \
                    "All files (*.*)|*.*"
@@ -172,6 +188,7 @@ class MainView (wx.Frame):
         wx.LogError(message)
 
     def Start(self):
+        """ Initializes the main loop for this UI. Starts listening events."""
         self.sizerMain.Fit(self)
         self.Centre(wx.BOTH)
         self.Show(True)

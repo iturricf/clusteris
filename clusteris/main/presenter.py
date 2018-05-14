@@ -4,6 +4,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 class Presenter(object):
+    """
+    Process UI events and updates view with results.
+    """
 
     def __init__(self, view, interactor, params):
         self.view = view
@@ -26,6 +29,7 @@ class Presenter(object):
         self.samples = []
 
     def InitView(self):
+        """Sets default values for the UI."""
         self.view.SetParseFeaturesCheckbox(self.params.DATASET_PARSE_FEATURES_DEFAULT_VALUE)
         self.view.SetLabelSamplesCountText('Cantidad de muestras: N/A')
         self.view.SetLabelFeaturesCountText('Cantidad de atributos: N/A')
@@ -92,6 +96,7 @@ class Presenter(object):
         self._ShowDatasetPlot()
 
     def _ShowDatasetPlot(self):
+        """Plots dataset points and shows them."""
         matplotlib.rcParams['axes.unicode_minus'] = False
         eje_x = 0
         eje_y = 0

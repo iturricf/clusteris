@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Params():
+    """Default parameters for UI."""
 
     CENTROID_MIN_VALUE = 2
     CENTROID_MAX_VALUE = 10
