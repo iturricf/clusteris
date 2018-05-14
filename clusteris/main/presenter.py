@@ -13,7 +13,7 @@ class Presenter(object):
         self.interactor = interactor
         self.params = params
 
-        interactor.Install(self, view)
+        interactor.Connect(self, view)
 
         self.InitModel()
         self.InitView()

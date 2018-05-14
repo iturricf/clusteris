@@ -5,7 +5,7 @@ import wx
 class Interactor(object):
     """Connects the UI events with the Presenter class."""
 
-    def Install(self, presenter, view):
+    def Connect(self, presenter, view):
         """Listens to UI evens and asigns an event handler on the Presenter."""
         self.presenter = presenter
         self.view = view
