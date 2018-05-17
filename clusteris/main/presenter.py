@@ -2,6 +2,7 @@
 
 import matplotlib
 import matplotlib.pyplot as plt
+import Genetic
 
 class Presenter(object):
     """
@@ -63,6 +64,10 @@ class Presenter(object):
         except IOError:
             self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % path)
 
+    def SetCentroidParam(self, value):
+        print("DEBUG - Selected value: %d" % value)
+        self.centroidsNumber = value
+
     def ToggleParseAttributes(self, isChecked):
         print('DEBUG - Parse attributes: %s' % isChecked)
         self.parseAttributes = isChecked
@@ -93,7 +98,7 @@ class Presenter(object):
         except IOError:
             self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % path)
 
-        self._ShowDatasetPlot()
+        self._GenetycAlg(self.datasetPath)
 
     def _ShowDatasetPlot(self):
         """Plots dataset points and shows them."""
@@ -101,11 +106,17 @@ class Presenter(object):
         eje_x = 0
         eje_y = 0
         for sample in self.samples:
+            #obtenemos el mayor en el eje x
             if float(sample[0]) > eje_x:
                 eje_x = float(sample[0])
+            #mayor en el eje y
             if float(sample[1]) > eje_y:
                 eje_y = float(sample[1])
             plt.plot(float(sample[0]), float(sample[1]), 'ro')
             # Ejes hasta +5 del mayor punto del dataset
             plt.axis([0, int(eje_x)+5, 0, int(eje_y)+5])
         plt.show()
+
+    def _GenetycAlg(self, path):
+        result = Genetic.GeneticAlg(self.datasetSamplesCount,self.centroidsNumber,float(0.85),float(0.05),int(10), path)
+        print result

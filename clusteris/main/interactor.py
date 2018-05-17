@@ -30,6 +30,7 @@ class Interactor(object):
         print("DEBUG - Selected value: %s; index: %d" % (evt.GetString(), evt.GetSelection()))
 
     def OnCentroidSpinCtrl(self, evt):
+        self.presenter.SetCentroidParam(evt.GetPosition())
         print("DEBUG - Selected value: %d" % evt.GetPosition())
 
     def OnProcessClicked(self, evt):

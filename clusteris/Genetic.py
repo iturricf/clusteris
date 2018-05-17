@@ -8,8 +8,7 @@ def ProcessDataset(arqStr):
     x, y = [], []
     for line in arq:
         lin = line.strip().split()
-        x.append(map(float, lin[:-1]))
-        y.append(lin[-1])
+        x.append(map(float, lin))
     return x
 
 def BinSearch(prob,p,imin,imax):
