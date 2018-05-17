@@ -27,11 +27,10 @@ class Interactor(object):
         self.presenter.ToggleParseAttributes(evt.IsChecked())
 
     def OnAlgorithmSelected(self, evt):
-        print("DEBUG - Selected value: %s; index: %d" % (evt.GetString(), evt.GetSelection()))
+        self.presenter.SetAlgorithm(evt.GetSelection(), evt.GetString())
 
     def OnCentroidSpinCtrl(self, evt):
         self.presenter.SetCentroidParam(evt.GetPosition())
-        print("DEBUG - Selected value: %d" % evt.GetPosition())
 
     def OnProcessClicked(self, evt):
         self.presenter.Process()
