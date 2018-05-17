@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class Plotter2D(object):
 
@@ -27,11 +28,16 @@ class Plotter3D(object):
         plt.rcParams['axes.unicode_minus'] = False
         plt.style.use('ggplot')
 
+        self.fig = plt.figure()
+        self.ax = Axes3D(self.fig)
+
     def PlotSamples(self, X, Y, Z, size, color):
         print('DEBUG - Plotter3D PlotSamples.')
+        self.ax.scatter(X, Y, Z, c=color, s=size)
 
     def PlotCentroids(self, X, Y, Z, size, color):
         print('DEBUG - Plotter3D PlotCentroids.')
+        self.ax.scatter(X, Y, Z, marker='*', c=color, s=size)
 
     def Show(self):
         plt.show()

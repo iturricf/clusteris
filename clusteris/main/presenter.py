@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import csv
+import importlib
 
 import numpy as np
 import pandas as pd
 
+from plotter import Plotter2D, Plotter3D
 from processor.dummy import Dummy
 from processor.kmeans import KMeans
 
-from plotter import Plotter2D, Plotter3D
 import Genetic
 
 class Presenter(object):
@@ -102,7 +103,7 @@ class Presenter(object):
     def _DetectDelimiter(self, path):
         """Tries to infer the delimiter symbol in a CSV file using csv Sniffer class."""
         sniffer = csv.Sniffer()
-        sniffer.preferred = ['|', ';', ',', ' ']
+        sniffer.preferred = ['|', ';', ',', '\t', ' ']
         with open(path, 'r') as file:
             line = file.readline()
             dialect = sniffer.sniff(line)
@@ -118,19 +119,36 @@ class Presenter(object):
         # Convert DataFrame columns into Numpy Array
         Dataset = np.array(list(zip(*samples)))
 
-        processor = KMeans({'n_clusters': self.centroidsNumber})
+        className = self.params.CLUSTERING_PROCESSORS[self.clusteringAlgorithm]
+
+        procModule = []
+
+        procModule.append(importlib.import_module('processor.dummy'))
+        procModule.append(importlib.import_module('processor.kmeans'))
+
+        procClass = getattr(procModule[self.clusteringAlgorithm], className)
+
+        processor = procClass({'n_clusters': self.centroidsNumber})
         processor.Fit(Dataset)
 
         labels = processor.GetLabels()
         centroids = processor.GetCentroids()
 
-        plotter = Plotter2D()
-        plotter.PlotSamples(Dataset[:, 0], Dataset[:, 1], size=7, color=labels)
+        if (self.datasetFeaturesCount < 3):
+            plotter = Plotter2D()
+            plotter.PlotSamples(Dataset[:, 0], Dataset[:, 1], size=35, color=labels)
 
-        if (len(centroids)):
-            plotter.PlotCentroids(centroids[:, 0], centroids[:, 1], color='#050505', size=100)
+            if (len(centroids)):
+                plotter.PlotCentroids(centroids[:, 0], centroids[:, 1], color='r', size=200)
 
-	plotter.Show()
+        else:
+            plotter = Plotter3D()
+            plotter.PlotSamples(Dataset[:, 0], Dataset[:, 1], Dataset[:, 2], size=35, color=labels)
+
+            if (len(centroids)):
+                plotter.PlotCentroids(centroids[:, 0], centroids[:, 1], centroids[:, 2], color='#050505', size=200)
+
+        plotter.Show()
 
     def _GenetycAlg(self, path):
         result = Genetic.GeneticAlg(self.datasetSamplesCount,self.centroidsNumber,float(0.85),float(0.05),int(10), path)
