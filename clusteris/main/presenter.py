@@ -1,7 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import matplotlib
-import matplotlib.pyplot as plt
+import csv
+import importlib
+
+import numpy as np
+import pandas as pd
+
+import processor.genetic
+from plotter import Plotter2D, Plotter3D
+from processor.dummy import Dummy
+from processor.kmeans import KMeans
+
 import Genetic
 
 class Presenter(object):
@@ -27,6 +36,8 @@ class Presenter(object):
         self.parseAttributes = False
         self.datasetSamplesCount = 0
         self.datasetFeaturesCount = 0
+        self.clusteringAlgorithm = self.params.CLUSTERING_ALGORITHM_DEFAULT
+        self.centroidsNumber = self.params.CENTROID_DEFAULT_VALUE
         self.samples = []
 
     def InitView(self):
@@ -43,26 +54,9 @@ class Presenter(object):
     def ShowFileDialog(self):
         self.view.ShowFileDialog()
 
-    def SetSelectedFile(self, path):
-        print('DEBUG - Selected path: %s' % path)
-
-        try:
-            with open(path, 'r') as dataset:
-                lines = dataset.readlines();
-
-                self.datasetSamplesCount = len(lines) - int(self.parseAttributes)
-                self.datasetFeaturesCount = self._GetDatesetFeaturesAmount(lines[0].strip())
-
-                print('DEBUG - Dataset samples: %d' % self.datasetSamplesCount)
-                print('DEBUG - Dataset attributes: %d' % self.datasetFeaturesCount)
-
-                self.view.SetLabelSamplesCountText('Cantidad de muestras: %d' % self.datasetSamplesCount)
-                self.view.SetLabelFeaturesCountText('Cantidad de atributos: %d' % self.datasetFeaturesCount)
-                self.view.SetStatusText('Archivo dataset: %s' % path)
-
-                self.datasetPath = path
-        except IOError:
-            self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % path)
+    def SetAlgorithm(self, index, name):
+        print("DEBUG - Selected index: %d; value: %s" % (index, name))
+        self.clusteringAlgorithm = index
 
     def SetCentroidParam(self, value):
         print("DEBUG - Selected value: %d" % value)
@@ -71,52 +65,96 @@ class Presenter(object):
     def ToggleParseAttributes(self, isChecked):
         print('DEBUG - Parse attributes: %s' % isChecked)
         self.parseAttributes = isChecked
+        self.ParseDatasetFile()
 
-    def _GetDatesetFeaturesAmount(self, line):
-        fields = line.split(',')
+    def SetSelectedFile(self, path):
+        print('DEBUG - Selected path: %s' % path)
+        self.datasetPath = path
 
-        if (not self._HasValidFeatures(fields, line)):
-            fields = line.split(';')
+        self.ParseDatasetFile()
 
-            if (not self._HasValidFeatures(fields, line)):
-                fields = line.split(' ')
+    def ParseDatasetFile(self):
+        try:
+            delimiter = self._DetectDelimiter(self.datasetPath)
+            if (not self.parseAttributes):
+                parseHeader = None
+            else:
+                parseHeader = 0
 
-                if (not self._HasValidFeatures(fields, line)):
-                    return 0
+            print('DEBUG - CSV Delimiter: %s' % delimiter)
 
-        return len(fields)
+            # Reads CSV file as Pandas DataFrame
+            self.dataset = pd.read_csv(self.datasetPath, header=parseHeader, sep=delimiter)
 
-    def _HasValidFeatures(self, fields, line):
-        return not (len(fields) == 1 and fields[0] == line)
+            self.datasetSamplesCount, self.datasetFeaturesCount = list(self.dataset.shape)
+
+            attributes = ", ".join(str(c) for c in self.dataset.columns)
+
+            print('DEBUG - Dataset samples: %d' % self.datasetSamplesCount)
+            print('DEBUG - Dataset attributes: %s' % self.datasetFeaturesCount)
+            print('DEBUG - Dataset attributes names: %s' % attributes)
+
+            self.view.SetLabelSamplesCountText('Cantidad de muestras: %d' % self.datasetSamplesCount)
+            self.view.SetLabelFeaturesCountText('Cantidad de atributos: %d' % self.datasetFeaturesCount)
+            self.view.SetStatusText('Archivo dataset: %s' % self.datasetPath)
+
+        except IOError:
+            self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % self.datasetPath)
+
+    def _DetectDelimiter(self, path):
+        """Tries to infer the delimiter symbol in a CSV file using csv Sniffer class."""
+        sniffer = csv.Sniffer()
+        sniffer.preferred = ['|', ';', ',', '\t', ' ']
+        with open(path, 'r') as file:
+            line = file.readline()
+            dialect = sniffer.sniff(line)
+            return dialect.delimiter
 
     def Process(self):
-        try:
-            with open(self.datasetPath) as dataset:
-                for line in dataset:
-                    sample = line.strip().split()
-                    self.samples.append(sample)
-        except IOError:
-            self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % path)
+        samples = []
 
-        self._GenetycAlg(self.datasetPath)
+        # Split Pandas DataFrame into columns
+        for i in self.dataset.columns:
+            samples.append(self.dataset[i].values)
 
-    def _ShowDatasetPlot(self):
-        """Plots dataset points and shows them."""
-        matplotlib.rcParams['axes.unicode_minus'] = False
-        eje_x = 0
-        eje_y = 0
-        for sample in self.samples:
-            #obtenemos el mayor en el eje x
-            if float(sample[0]) > eje_x:
-                eje_x = float(sample[0])
-            #mayor en el eje y
-            if float(sample[1]) > eje_y:
-                eje_y = float(sample[1])
-            plt.plot(float(sample[0]), float(sample[1]), 'ro')
-            # Ejes hasta +5 del mayor punto del dataset
-            plt.axis([0, int(eje_x)+5, 0, int(eje_y)+5])
-        plt.show()
+        # Convert DataFrame columns into Numpy Array
+        Dataset = np.array(list(zip(*samples)))
+
+        if (self.clusteringAlgorithm == 2):
+            self._GenetycAlg(self.datasetPath)
+
+        else:
+            className = self.params.CLUSTERING_PROCESSORS[self.clusteringAlgorithm]
+
+            procModule = []
+
+            procModule.append(importlib.import_module('processor.dummy'))
+            procModule.append(importlib.import_module('processor.kmeans'))
+
+            procClass = getattr(procModule[self.clusteringAlgorithm], className)
+
+            processor = procClass({'n_clusters': self.centroidsNumber})
+            processor.Fit(Dataset)
+
+            labels = processor.GetLabels()
+            centroids = processor.GetCentroids()
+
+            if (self.datasetFeaturesCount < 3):
+                plotter = Plotter2D()
+                plotter.PlotSamples(Dataset[:, 0], Dataset[:, 1], size=35, color=labels)
+
+                if (len(centroids)):
+                    plotter.PlotCentroids(centroids[:, 0], centroids[:, 1], color='r', size=200)
+
+            else:
+                plotter = Plotter3D()
+                plotter.PlotSamples(Dataset[:, 0], Dataset[:, 1], Dataset[:, 2], size=35, color=labels)
+
+                if (len(centroids)):
+                    plotter.PlotCentroids(centroids[:, 0], centroids[:, 1], centroids[:, 2], color='#050505', size=200)
+
+            plotter.Show()
 
     def _GenetycAlg(self, path):
-        result = Genetic.GeneticAlg(self.datasetSamplesCount,self.centroidsNumber,float(0.85),float(0.05),int(10), path)
+        result = processor.genetic.GeneticAlg(self.datasetSamplesCount, self.centroidsNumber,float(0.85),float(0.05),int(10), path)
         print result
