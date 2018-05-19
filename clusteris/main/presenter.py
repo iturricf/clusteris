@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 import processor.genetic
-from plotter import Plotter2D, Plotter3D
+from plotter import Plotter
 from processor.dummy import Dummy
 from processor.kmeans import KMeans
 
@@ -139,19 +139,19 @@ class Presenter(object):
             labels = processor.GetLabels()
             centroids = processor.GetCentroids()
 
+            plotter = Plotter()
+
             if (self.datasetFeaturesCount < 3):
-                plotter = Plotter2D()
-                plotter.PlotSamples(Dataset[:, 0], Dataset[:, 1], size=35, color=labels)
+                plotter.PlotSamples2D(Dataset, labels=labels, clusters=self.centroidsNumber)
 
                 if (len(centroids)):
-                    plotter.PlotCentroids(centroids[:, 0], centroids[:, 1], color='r', size=200)
+                    plotter.PlotCentroids2D(centroids)
 
             else:
-                plotter = Plotter3D()
-                plotter.PlotSamples(Dataset[:, 0], Dataset[:, 1], Dataset[:, 2], size=35, color=labels)
+                plotter.PlotSamples3D(Dataset, labels=labels, clusters=self.centroidsNumber)
 
                 if (len(centroids)):
-                    plotter.PlotCentroids(centroids[:, 0], centroids[:, 1], centroids[:, 2], color='#050505', size=200)
+                    plotter.PlotCentroids3D(centroids)
 
             plotter.Show()
 
