@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import platform
+
 from matplotlib import cm
 from matplotlib import pyplot as plt
 from matplotlib.colors import Normalize
@@ -11,6 +13,7 @@ class Plotter(object):
     def __init__(self):
         plt.rcParams['figure.figsize'] = (16, 9)
         plt.rcParams['axes.unicode_minus'] = False
+        plt.rcParams['toolbar'] = 'None'
         plt.style.use('ggplot')
 
         self.pointsMarkers = ['o', 's', '^', 'v', '<', '>', '8', 'x', '+', 'p']
@@ -58,4 +61,11 @@ class Plotter(object):
         self.ax.scatter(c[:, 0], c[:, 1], c[:, 2], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize)
 
     def Show(self):
+        manager = plt.get_current_fig_manager()
+
+        if (platform.system() == 'Linux'):
+            manager.resize(*manager.window.maxsize())
+        else:
+            manager.window.state('zoomed')
+
         plt.show()
