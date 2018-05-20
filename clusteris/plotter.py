@@ -63,6 +63,7 @@ class Plotter(object):
     def Show(self):
         manager = plt.get_current_fig_manager()
 
+        # From https://stackoverflow.com/a/22418354
         if (platform.system() == 'Linux'):
             manager.resize(*manager.window.maxsize())
         else:
