@@ -6,6 +6,7 @@ from matplotlib import cm
 from matplotlib import pyplot as plt
 from matplotlib.colors import Normalize
 from mpl_toolkits.mplot3d import Axes3D
+from mpldatacursor import datacursor
 import numpy as np
 
 class Plotter(object):
@@ -41,7 +42,9 @@ class Plotter(object):
 
     def PlotCentroids2D(self, c):
         print('DEBUG - Plotter PlotCentroids2D.')
-        plt.scatter(c[:, 0], c[:, 1], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroides")
+        plt.scatter(c[:, 0], c[:, 1], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroide")
+
+        datacursor(hover=True, formatter='x: {x:.5f}\ny: {y:.5f}\n{label}'.format)
 
     def PlotSamples3D(self, dataset, labels, clusters):
         print('DEBUG - Plotter PlotSamples3D.')
@@ -60,7 +63,9 @@ class Plotter(object):
 
     def PlotCentroids3D(self, c):
         print('DEBUG - Plotter PlotCentroids3D.')
-        self.ax.scatter(c[:, 0], c[:, 1], c[:, 2], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroides")
+        self.ax.scatter(c[:, 0], c[:, 1], c[:, 2], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroide")
+
+        datacursor(hover=True, formatter='x: {x:.5f}\ny: {y:.5f}\nz: {z:.5f}\n{label}'.format)
 
     def Show(self):
         manager = plt.get_current_fig_manager()
