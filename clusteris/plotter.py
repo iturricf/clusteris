@@ -35,12 +35,13 @@ class Plotter(object):
             points = np.array([dataset[j] for j in range(len(dataset)) if labels[j] == i])
             color = self._GetColor(i, clusters)
             marker = self.pointsMarkers[i]
+            label = "Clase %d" % i
 
-            plt.scatter(points[:, 0], points[:, 1], s=self.pointSize, c=color, marker=marker)
+            plt.scatter(points[:, 0], points[:, 1], s=self.pointSize, c=color, marker=marker, label=label)
 
     def PlotCentroids2D(self, c):
         print('DEBUG - Plotter PlotCentroids2D.')
-        plt.scatter(c[:, 0], c[:, 1], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize)
+        plt.scatter(c[:, 0], c[:, 1], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroides")
 
     def PlotSamples3D(self, dataset, labels, clusters):
         print('DEBUG - Plotter PlotSamples3D.')
@@ -53,12 +54,13 @@ class Plotter(object):
             points = np.array([dataset[j] for j in range(len(dataset)) if labels[j] == i])
             color = self._GetColor(i, clusters)
             marker = self.pointsMarkers[i]
+            label = "Clase %d" % i
 
-            self.ax.scatter(points[:, 0], points[:, 1], points[:, 2], s=self.pointSize, c=color, marker=marker)
+            self.ax.scatter(points[:, 0], points[:, 1], points[:, 2], s=self.pointSize, c=color, marker=marker, label=label)
 
     def PlotCentroids3D(self, c):
         print('DEBUG - Plotter PlotCentroids3D.')
-        self.ax.scatter(c[:, 0], c[:, 1], c[:, 2], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize)
+        self.ax.scatter(c[:, 0], c[:, 1], c[:, 2], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroides")
 
     def Show(self):
         manager = plt.get_current_fig_manager()
@@ -69,4 +71,5 @@ class Plotter(object):
         else:
             manager.window.state('zoomed')
 
+        plt.legend()
         plt.show()
