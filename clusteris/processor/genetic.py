@@ -27,6 +27,7 @@ class Individuo (object):
     # constructor
     def __init__(self, puntos, k, centroides):
         self.centroides = centroides
+        self.puntos = puntos
         self.k = k
         if puntos != None:
             for i in range(0, k):
@@ -45,7 +46,7 @@ class Individuo (object):
         for punto in puntos:
             distancia = []
             for index in range(0, self.k):
-                centroide = np.array(self.centroides[index*self.dimension:(index+1)*self.dimension])
+                centroide = np.array(self.centroides[ index*self.dimension:(index+1)*self.dimension])
                 distancia.append(np.linalg.norm(np.array(punto) - centroide))
             salida.append(np.argmin(distancia))
         return salida
@@ -91,7 +92,6 @@ class Individuo (object):
         self.actualizar(puntos, salida)
         return min(self.intercluster())/max(self.intracluster(puntos, self.asignar(puntos)))
 
-
     # operacion de mutacion
     def mutacion(self, probmut):
         for c,centroid in enumerate(self.centroides):
@@ -122,7 +122,7 @@ def ruleta(pop, fit):
     prob = [(item + sum(fit[:index])) / sumf for index, item in enumerate(fit)]
     return pop[BinSearch(prob, uniform(0, 1), 0, len(prob) - 1)]
 
-def GeneticAlg(npop, k, pcros, pmut, maxit, arqStr):
+def GeneticAlg(self, npop, k, pcros, pmut, maxit, arqStr):
     puntos = ProcessDataset(arqStr)
     pop = poblacionInicial(npop, puntos, k)
     fit = [indiv.fitness(puntos) for indiv in pop]
@@ -151,9 +151,31 @@ def GeneticAlg(npop, k, pcros, pmut, maxit, arqStr):
         # elitism (but individual is kept outside population)
         if max(fit) > verybest[1]:
             verybest = [pop[np.argmax(fit)], max(fit)]
+    verybest[0].cluster = indiv.asignar(puntos)
+    print('DEBUG - Genetic Centroids:')
     print "\nFitness = %s" % verybest[1]
+    print verybest[0].centroides
     # return best cluster
-    return verybest[0].centroides
+    return verybest[0]
+
+class Genetic(object):
+
+    def __init__(self, params):
+        self.NClusters = params['n_clusters']
+
+    def Fit(self, path):
+        self.best = GeneticAlg(self, 10, self.NClusters, 0.85, 0.05, 15, path)
+
+    def GetCentroids(self):
+        sal = []
+        for j in range(0, self.best.k):
+            sal.append(self.best.centroides[j * self.best.dimension:(j + 1) * self.best.dimension])
+        self.best.centroides = np.array(sal)
+        return self.best.centroides
+
+    def GetLabels(self):
+        return self.best.cluster
+
 
 # python Genetic.py n_individuals n_clusters p_crossover p_mutation iterations input_file
 if __name__ == '__main__':
