@@ -164,8 +164,8 @@ class MainView (wx.Frame):
     def ShowFileDialog(self):
         """Shows file dialog and dispatch custom event after dataset file is selected."""
 
-        wildcard = "Text files (*.txt)|*.txt|" \
-                   "Comma separated values files (*.csv)|*.csv|" \
+        wildcard = "Comma separated values files (*.csv)|*.csv|" \
+                   "Text files (*.txt)|*.txt|" \
                    "All files (*.*)|*.*"
 
         with  wx.FileDialog(
