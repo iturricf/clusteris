@@ -140,27 +140,27 @@ class Presenter(object):
         labels = processor.GetLabels()
         centroids = processor.GetCentroids()
 
-            plotter = Plotter()
+        plotter = Plotter()
 
+        clusters = self.centroidsNumber
+
+        if (self.clusteringAlgorithm == 0):
+            clusters = 1
+
+        if (self.datasetFeaturesCount < 3):
             clusters = self.centroidsNumber
-
             if (self.clusteringAlgorithm == 0):
                 clusters = 1
+            plotter.PlotSamples2D(Dataset, labels=labels, clusters=clusters)
 
-            if (self.datasetFeaturesCount < 3):
-                clusters = self.centroidsNumber
-                if (self.clusteringAlgorithm == 0):
-                    clusters = 1
-                plotter.PlotSamples2D(Dataset, labels=labels, clusters=clusters)
+            if (len(centroids)):
+                plotter.PlotCentroids2D(centroids)
 
-                if (len(centroids)):
-                    plotter.PlotCentroids2D(centroids)
+        else:
+            plotter.PlotSamples3D(Dataset, labels=labels, clusters=clusters)
 
-            else:
-                plotter.PlotSamples3D(Dataset, labels=labels, clusters=clusters)
-
-                if (len(centroids)):
-                    plotter.PlotCentroids3D(centroids)
+            if (len(centroids)):
+                plotter.PlotCentroids3D(centroids)
 
         plotter.Show()
 
