@@ -127,7 +127,12 @@ def GeneticAlg(self, npop, k, pcros, pmut, maxit, arqStr):
     pop = poblacionInicial(npop, puntos, k)
     fit = [indiv.fitness(puntos) for indiv in pop]
     verybest = [pop[np.argmax(fit)], max(fit)]
-    for i in range(0, maxit):
+    #nro de iteraciones
+    iter = 0
+    #cada cluster debe tener al menos un punto
+    min_asign = 1
+    #for i in range(0, maxit):
+    while iter <= maxit or min_asign < 1:
         fit = [indiv.fitness(puntos) for indiv in pop]
         new = []
         while len(new) < len(pop):
@@ -151,7 +156,14 @@ def GeneticAlg(self, npop, k, pcros, pmut, maxit, arqStr):
         # elitism (but individual is kept outside population)
         if max(fit) > verybest[1]:
             verybest = [pop[np.argmax(fit)], max(fit)]
-    verybest[0].cluster = indiv.asignar(puntos)
+
+        iter += 1
+        asignacion = verybest[0].asignar(puntos)
+        cant_asignaciones = []
+        for i in range(0, k):
+            cant_asignaciones.append(asignacion.count(i))
+        min_asign = np.argmin(cant_asignaciones)
+    verybest[0].cluster = asignacion
     print('DEBUG - Genetic Centroids:')
     print "\nFitness = %s" % verybest[1]
     print verybest[0].centroides
@@ -164,7 +176,7 @@ class Genetic(object):
         self.NClusters = params['n_clusters']
 
     def Fit(self, path):
-        self.best = GeneticAlg(self, 10, self.NClusters, 0.85, 0.05, 15, path)
+        self.best = GeneticAlg(self, 10, self.NClusters, 0.85, 0.05, 10, path)
 
     def GetCentroids(self):
         sal = []
