@@ -1,10 +1,21 @@
-Algoritmos Genéticos para el análisis de Clusters
+# Algoritmos Genéticos para el Análisis de Clusters
 
-Requirements:
-SKLearn
-Scipy
-Numpy
-mpldatacursor
+Este trabajo consiste en implementar algoritmos genéticos que permitan encontrar clusters en bases de datos.
 
-How To Use
-python clusteris.py
+## Requirements:
+* Python 2.7.x
+
+Además las siguientes librerías:
+* SKLearn
+* Scipy
+* Numpy
+* mpldatacursor
+
+Todas estas librerias se pueden instalar con ```pip```. Por ejemplo:
+```
+pip install SKLearn
+```
+
+## Running:
+
+```python clusteris.py```
