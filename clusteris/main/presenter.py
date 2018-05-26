@@ -10,8 +10,7 @@ import processor.genetic
 from plotter import Plotter
 from processor.dummy import Dummy
 from processor.kmeans import KMeans
-
-import processor.genetic
+from processor.genetic_plus import Genetic
 
 class Presenter(object):
     """
@@ -120,22 +119,18 @@ class Presenter(object):
         # Convert DataFrame columns into Numpy Array
         Dataset = np.array(list(zip(*samples)))
 
-
         className = self.params.CLUSTERING_PROCESSORS[self.clusteringAlgorithm]
 
         procModule = []
 
         procModule.append(importlib.import_module('processor.dummy'))
         procModule.append(importlib.import_module('processor.kmeans'))
-        procModule.append(importlib.import_module('processor.genetic'))
+        procModule.append(importlib.import_module('processor.genetic_plus'))
 
         procClass = getattr(procModule[self.clusteringAlgorithm], className)
 
         processor = procClass({'n_clusters': self.centroidsNumber})
-        if (self.clusteringAlgorithm == 2):
-            processor.Fit(self.datasetPath)
-        else:
-            processor.Fit(Dataset)
+        processor.Fit(Dataset)
 
         labels = processor.GetLabels()
         centroids = processor.GetCentroids()
@@ -163,7 +158,3 @@ class Presenter(object):
                 plotter.PlotCentroids3D(centroids)
 
         plotter.Show()
-
-    def _GeneticAlg(self, path):
-        result = processor.genetic.GeneticAlg(self.datasetSamplesCount, self.centroidsNumber,float(0.85),float(0.05),int(10), path)
-        print result
