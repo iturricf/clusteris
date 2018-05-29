@@ -1,6 +1,9 @@
 from random import randint, uniform
 from copy import deepcopy
 from sys import argv
+from sklearn import metrics
+from sklearn.metrics import silhouette_score
+from sklearn.metrics import calinski_harabaz_score
 import numpy as np
 
 def ProcessDataset(arqStr):
@@ -83,15 +86,21 @@ class Individuo (object):
     def fitness(self, puntos):
         return min(self.intercluster()) / max(self.intracluster(puntos))
 
+    def fitness2(self, puntos):
+        return silhouette_score(puntos, self.labels)
+
+    def fitness3(self, puntos):
+        return calinski_harabaz_score(puntos, self.labels)
+
     # operacion de mutacion
     def mutacion(self):
         for c, centroid in enumerate(self.centroides):
             delta = uniform(0,1)
             if uniform(0,1) <= 0.5:
-                valor = centroid - 2*delta*centroid
+                valor = centroid - delta*centroid
                 self.centroides[c] = valor if valor >= 0 else 0
             else:
-                self.centroides[c] = centroid + 2*delta*centroid if centroid!=0 else 2*delta
+                self.centroides[c] = centroid + delta*centroid if centroid!=0 else delta
 
 def poblacionInicial(numpob, puntos, k):
     individuos = [Individuo(puntos, k, []) for i in range(0, numpob)]
@@ -129,7 +138,8 @@ def GeneticAlg(self, npop, k, pcros, pmut, maxit, arqStr):
     #for i in range(0, maxit):
     while iter <= maxit or cluster_no_asignados:
         new = []
-        fit = [indiv.fitness(puntos) for indiv in pop]
+        fit = [indiv.fitness3(puntos) for indiv in pop]
+        #fit2 = [indiv.fitness2(puntos) for indiv in pop]
 
         #seleccion elitista, se preserva el mejor individuo
         if (iter <= maxit):
@@ -166,13 +176,13 @@ def GeneticAlg(self, npop, k, pcros, pmut, maxit, arqStr):
                 if indiv.clusterVacio() == True:
                     new.remove(indiv)
         pop = deepcopy(new)
-        
+
         iter += 1
 
         #en la ultima iteracion obtenemos el mejor
         if(iter > maxit):
             # obtenemos el mejor individuo
-            fit = [indiv.fitness(puntos) for indiv in pop]
+            fit = [indiv.fitness3(puntos) for indiv in pop]
             best = [pop[np.argmax(fit)], max(fit)]
             cluster_no_asignados = True in [i not in best[0].labels for i in range(0, k)]
 
@@ -187,7 +197,7 @@ class Genetic(object):
         self.NClusters = params['n_clusters']
 
     def Fit(self, path):
-        self.best = GeneticAlg(self, 4, self.NClusters, 0.50, 0.25, 5, path)
+        self.best = GeneticAlg(self, 10, self.NClusters, 0.50, 0.25, 40, path)
 
     def GetCentroids(self):
         sal = []
