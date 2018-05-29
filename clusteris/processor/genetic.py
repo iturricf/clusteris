@@ -4,6 +4,7 @@ from sys import argv
 from sklearn import metrics
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import calinski_harabaz_score
+from sklearn.metrics import pairwise_distances_argmin
 import numpy as np
 
 def ProcessDataset(arqStr):
@@ -26,7 +27,7 @@ class Individuo (object):
                 for coordenada in punto:
                     self.centroides.append(coordenada)
             self.dimension = len(puntos[0])
-            self.labels = self.asignar(puntos)
+            self.labels = self.asignarPuntos(puntos)
         else:
             self.dimension = len(centroides)/k
 
@@ -41,6 +42,17 @@ class Individuo (object):
                 distancia.append(np.linalg.norm(np.array(punto) - centroide))
             salida.append(np.argmin(distancia))
         return salida
+
+    def asignarPuntos(self, puntos):
+        arrpoint = np.array(puntos)
+        arrcentr = np.array(self.centroides)
+        arrcentr2 = []
+        for index in range(0, self.k):
+            elem = self.centroides[index*self.dimension:(index+1)*self.dimension]
+            arrcentr2.append(elem)
+        arrcentr2 = np.array(arrcentr2)
+        particion = pairwise_distances_argmin(arrpoint, arrcentr2)
+        return particion
 
     # devuelve True si hay un cluster vacio y False si todos los clusters estan no vacios
     def clusterVacio(self):
@@ -170,9 +182,8 @@ def GeneticAlg(self, npop, k, pcros, pmut, maxit, arqStr):
                     new.append(child)
             # asignamos los puntos a un cluster
             for indiv in new:
-                indiv.labels = indiv.asignar(puntos)
-            # si algun individuo tiene algun cluster vacio, lo sacamos
-            for indiv in new:
+                indiv.labels = indiv.asignarPuntos(puntos)
+                # si algun individuo tiene algun cluster vacio, lo sacamos
                 if indiv.clusterVacio() == True:
                     new.remove(indiv)
         pop = deepcopy(new)
@@ -197,7 +208,7 @@ class Genetic(object):
         self.NClusters = params['n_clusters']
 
     def Fit(self, path):
-        self.best = GeneticAlg(self, 10, self.NClusters, 0.50, 0.25, 40, path)
+        self.best = GeneticAlg(self, 10, self.NClusters, 0.50, 0.25, 50, path)
 
     def GetCentroids(self):
         sal = []
