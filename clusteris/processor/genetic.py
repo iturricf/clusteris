@@ -21,12 +21,17 @@ class Individuo (object):
         self.centroides = centroides
         self.k = k
         if puntos != None:
-            for i in range(0, k):
+            self.dimension = len(puntos[0])
+            #evitamos que elija al mismo punto como centroides
+            puntosDisponibles = deepcopy(puntos)
+            while (len(self.centroides)/self.dimension) < k:
+                valor = randint(0, len(puntosDisponibles)-1)
                 # obtenemos un punto al azar y pasa a ser un centroide
-                punto = puntos[randint(0, len(puntos)-1)]
+                punto = puntosDisponibles[valor]
                 for coordenada in punto:
                     self.centroides.append(coordenada)
-            self.dimension = len(puntos[0])
+                #sacamos el punto de los puntos disponibles
+                puntosDisponibles.pop(valor)
             self.labels = self.asignarPuntos(puntos)
         else:
             self.dimension = len(centroides)/k
@@ -45,14 +50,12 @@ class Individuo (object):
 
     def asignarPuntos(self, puntos):
         arrpoint = np.array(puntos)
-        arrcentr = np.array(self.centroides)
-        arrcentr2 = []
+        arrcentr = []
         for index in range(0, self.k):
             elem = self.centroides[index*self.dimension:(index+1)*self.dimension]
-            arrcentr2.append(elem)
-        arrcentr2 = np.array(arrcentr2)
-        particion = pairwise_distances_argmin(arrpoint, arrcentr2)
-        return particion
+            arrcentr.append(elem)
+        arrcentr = np.array(arrcentr)
+        return pairwise_distances_argmin(arrpoint, arrcentr)
 
     # devuelve True si hay un cluster vacio y False si todos los clusters estan no vacios
     def clusterVacio(self):
@@ -95,12 +98,14 @@ class Individuo (object):
         return inter
 
     # funcion de aptitud
-    def fitness(self, puntos):
+    def fitness1(self, puntos):
         return min(self.intercluster()) / max(self.intracluster(puntos))
 
+    # funcion de aptitud usando indice de Silhouette
     def fitness2(self, puntos):
         return silhouette_score(puntos, self.labels)
 
+    # funcion de aptitud usando indice de Calinski
     def fitness3(self, puntos):
         return calinski_harabaz_score(puntos, self.labels)
 
@@ -115,9 +120,13 @@ class Individuo (object):
                 self.centroides[c] = centroid + delta*centroid if centroid!=0 else delta
 
 def poblacionInicial(numpob, puntos, k):
-    individuos = [Individuo(puntos, k, []) for i in range(0, numpob)]
-    return individuos
-
+    pob = []
+    while(len(pob) < numpob):
+        indiv = Individuo(puntos, k, [])
+        indiv.asignarPuntos(puntos)
+        if not indiv.clusterVacio():
+            pob.append(indiv)
+    return pob
 # cruza por punto simple
 def cruza(padre1, padre2):
     puntoCruza = randint(1, len(padre1.centroides)-2)
@@ -139,63 +148,53 @@ def ruleta(pop, fit):
 
 def GeneticAlg(self, npop, k, pcros, pmut, maxit, arqStr):
     puntos = ProcessDataset(arqStr)
+    #generamos la poblacion inicial
     pop = poblacionInicial(npop, puntos, k)
 
-    #nro de iteraciones
-    iter = 1
-
-    #Flag para verificar que todos los clusters tengan al menos un punto
-    cluster_no_asignados = False
-
-    #for i in range(0, maxit):
-    while iter <= maxit or cluster_no_asignados:
+    for i in range(0, maxit):
         new = []
         fit = [indiv.fitness3(puntos) for indiv in pop]
-        #fit2 = [indiv.fitness2(puntos) for indiv in pop]
 
-        #seleccion elitista, se preserva el mejor individuo
-        if (iter <= maxit):
-            new.append(pop[np.argmax(fit)])
+        # seleccion elitista, se preserva el mejor individuo para la siguiente poblacion
+        new.append(pop[np.argmax(fit)])
 
         while len(new) < len(pop):
             # genetic operators
             # seleccion por ruleta
             parent1 = ruleta(pop, fit)
             p = uniform(0, 1)
-            # probabilidad de seleccion 20%
+            # seleccion por ranking
             if p <= 0.2:
-                new.append(parent1)
+                parent1.labels = parent1.asignarPuntos(puntos)
+                # si este individuo tiene todos los cluster no vacios, lo incluimos a la nueva poblacion
+                if not parent1.clusterVacio():
+                    new.append(parent1)
             else:
-                # cruza 65%
+                # cruza simple en un punto
                 if p <= pcros:
                     parent2 = ruleta(pop, fit)
                     while parent2 == parent1:
                         parent2 = ruleta(pop, fit)
                     child1, child2 = cruza(parent1, parent2)
-                    new.append(child1)
+                    child1.labels = child1.asignarPuntos(puntos)
+                    if not child1.clusterVacio():
+                        new.append(child1)
                     if len(new) < len(pop):
-                        new.append(child2)
-                # mutacion 15% de los cuales mutan solo el 0.05%
+                        child2.labels = child2.asignarPuntos(puntos)
+                        if not child2.clusterVacio():
+                            new.append(child2)
+                # mutacion
                 else:
                     child = deepcopy(parent1)
                     child.mutacion()
-                    new.append(child)
-            # asignamos los puntos a un cluster
-            for indiv in new:
-                indiv.labels = indiv.asignarPuntos(puntos)
-                # si algun individuo tiene algun cluster vacio, lo sacamos
-                if indiv.clusterVacio() == True:
-                    new.remove(indiv)
+                    child.labels = child.asignarPuntos(puntos)
+                    if not child.clusterVacio():
+                        new.append(child)
+        # actualizamos la nueva poblacion
         pop = deepcopy(new)
-
-        iter += 1
-
-        #en la ultima iteracion obtenemos el mejor
-        if(iter > maxit):
-            # obtenemos el mejor individuo
-            fit = [indiv.fitness3(puntos) for indiv in pop]
-            best = [pop[np.argmax(fit)], max(fit)]
-            cluster_no_asignados = True in [i not in best[0].labels for i in range(0, k)]
+    # obtenemos el mejor individuo de la ultima poblacion generada
+    fit = [indiv.fitness3(puntos) for indiv in pop]
+    best = [pop[np.argmax(fit)], max(fit)]
 
     print('DEBUG - Genetic Centroids:')
     print "\nFitness = %s" % best[1]
@@ -208,7 +207,7 @@ class Genetic(object):
         self.NClusters = params['n_clusters']
 
     def Fit(self, path):
-        self.best = GeneticAlg(self, 10, self.NClusters, 0.50, 0.25, 50, path)
+        self.best = GeneticAlg(self, 40, self.NClusters, 0.50, 0.25, 50, path)
 
     def GetCentroids(self):
         sal = []
