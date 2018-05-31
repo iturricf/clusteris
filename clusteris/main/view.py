@@ -172,6 +172,7 @@ class MainView (wx.Frame):
             self,
             message='Please select a dataset file...',
             wildcard=wildcard,
+            defaultDir="../samples",
             style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR|
                   wx.FD_PREVIEW
            ) as fileDialog:
