@@ -307,8 +307,13 @@ class Individual(object):
         # print("Fitness: %f" % fitness)
 
         # return fitness
-        fitness = calinski_harabaz_score(self.dataset, self.elements)
 
+        for pointClass in self.classElements:
+            if len(pointClass) == 0:
+                print("Cluster VACIO!!!")
+                return 0
+
+        fitness = calinski_harabaz_score(self.dataset, self.elements)
         print("Fitness: %f" % fitness)
 
         return fitness
