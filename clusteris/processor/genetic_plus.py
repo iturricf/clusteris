@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+from copy import deepcopy
 from random import randint, uniform
 from timer import Timer
 
@@ -109,7 +110,7 @@ class Genetic(object):
                 toCross = self._GetCrossingPairs(missingPop)
 
                 for pair in toCross:
-                    child1, child2 = self._MakeCross(pair[0], pair[1])
+                    child1, child2 = pair[0].CrossWith(pair[1])
 
                     newPop.append(child1)
 
@@ -150,7 +151,7 @@ class Genetic(object):
         toMutate = []
 
         for i in range(self.MUTATION_RETRY):
-            tryMutation = [individual for individual in self._RandomSelection(quantity) if uniform(0, 1) < self.MUTATION_PROBABILITY]
+            tryMutation = [deepcopy(individual) for individual in self._RandomSelection(quantity) if uniform(0, 1) < self.MUTATION_PROBABILITY]
             toMutate.extend(tryMutation)
 
             if (len(toMutate) >= quantity):
