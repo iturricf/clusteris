@@ -6,18 +6,19 @@ from random import randint, uniform
 from timer import Timer
 
 import numpy as np
+from sklearn.metrics import calinski_harabaz_score
 
 class Genetic(object):
-    INITIAL_POPULATION = 15
-    MAX_ITERATIONS = 50
+    INITIAL_POPULATION = 20 # Cantidad de individuos en la población inicial
+    MAX_ITERATIONS = 10 # Cantidad de iteraciones
     FITNESS_THRESHOLD = 0.1
 
-    SELECTION_RATIO = 0.2
-    CROSSING_RATIO = 0.6
-    MUTATION_RATIO = 0.2
+    SELECTION_RATIO = 0.2 # Porcentaje de selección
+    CROSSING_RATIO = 0.6 # Porcentaje de cruza
+    MUTATION_RATIO = 0.2 # Porcentaje de mutación
 
-    MUTATION_PROBABILITY = 0.1
-    MUTATION_RETRY = 10
+    MUTATION_PROBABILITY = 0.1 # Probabilidad de mutación para individuo seleccionado
+    MUTATION_RETRY = 10 # Reintentos del proceso de mutación
 
 
     def __init__(self, params):
@@ -41,12 +42,12 @@ class Genetic(object):
         for it in range(self.MAX_ITERATIONS):
             self.fitness = [i.Fitness() for i in self.population] # 2. Calculo de aptitude de la población
 
-            minFit = np.argmin(self.fitness)
+            minFit = np.argmax(self.fitness)
             print('DEBUG - Min fit key %d - value: %f' % (minFit, self.fitness[minFit]))
 
-            if (self.fitness[minFit] <= self.FITNESS_THRESHOLD): # 3. Primera condición de parada
-                self.bestIndividual = self.population[minFit]
-                break
+            # if (self.fitness[minFit] <= self.FITNESS_THRESHOLD): # 3. Primera condición de parada
+            #     self.bestIndividual = self.population[minFit]
+            #     break
 
             newPop = [] # Construcción de la nueva población
 
@@ -124,12 +125,14 @@ class Genetic(object):
 
             print("New pop lenght: %d" % len(newPop))
 
+            self.population = newPop
+
             t.AddTime("Iteration %d" % it)
 
         # 7. Ultima condición de parada, fin de las iteraciones
         # Si no encontré una solución antes, uso la mejor despues del proceso
         if self.bestIndividual == None:
-            minFit = np.argmin(self.fitness)
+            minFit = np.argmax(self.fitness)
             self.bestIndividual = self.population[minFit]
 
         t.AddTime("End")
@@ -200,7 +203,7 @@ class Genetic(object):
 
     def _ElitistSelection(self):
         """ Selección elitista del mejor individuo."""
-        return self.population[np.argmin(self.fitness)]
+        return self.population[np.argmax(self.fitness)]
 
     def _GetInitialPop(self):
         """ Generación de población inicial aleatoria basada en puntos existentes."""
@@ -242,8 +245,6 @@ class Individual(object):
         self.dataset = dataset
         self.centroids = np.array(centroids)
         self.clusters = len(centroids)
-        self.elements = []
-        self.classElements = [[] for i in range(self.clusters)]
 
         self.datasetLen, self.datasetDimension = list(dataset.shape)
 
@@ -251,6 +252,10 @@ class Individual(object):
 
     def Update(self):
         """ Actualiza la asignación de puntos del dataset al centroide correspondiente."""
+
+        self.elements = []
+        self.classElements = [[] for i in range(self.clusters)]
+
         for key, value in enumerate(self.dataset):
             distance = []
             points = []
@@ -294,10 +299,15 @@ class Individual(object):
 
     def Fitness(self):
         """ Calcula la aptitud del individuo."""
-        intercluster = self._Intercluster()
-        intracluster = self._Intracluster()
+        # intercluster = self._Intercluster()
+        # intracluster = self._Intracluster()
 
-        fitness = 1.0 / (min(intercluster) / max(intracluster))
+        # fitness = 1.0 / (min(intercluster) / max(intracluster))
+
+        # print("Fitness: %f" % fitness)
+
+        # return fitness
+        fitness = calinski_harabaz_score(self.dataset, self.elements)
 
         print("Fitness: %f" % fitness)
 
