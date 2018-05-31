@@ -38,6 +38,9 @@ class Plotter(object):
             marker = self.pointsMarkers[i]
             label = "Clase %d" % i
 
+            print(points.shape)
+            print(len(label))
+
             plt.scatter(points[:, 0], points[:, 1], s=self.pointSize, c=color, marker=marker, label=label)
 
     def PlotCentroids2D(self, c):
