@@ -71,7 +71,7 @@ class Genetic(object):
             print('DEBUG - Crossing amount: %s' % crossAmount)
 
             crossOverflow = crossAmount % 2.0
-            crossAmount = math.ceil(crossAmount / 2.0) # Se usa la mitad de pares para generar 2 hijos
+            crossAmount = int(math.ceil(crossAmount / 2.0)) # Se usa la mitad de pares para generar 2 hijos
 
             print('DEBUG - Overflow: %s' % crossOverflow)
             print('DEBUG - Cross: %s' % crossAmount)
@@ -79,10 +79,9 @@ class Genetic(object):
             toCross = self._GetCrossingPairs(crossAmount) # Selección de pares
 
             for pair in toCross:
-                child1, child2 = self._MakeCross(pair[0], pair[1]) # Cruza
+                child1, child2 = pair[0].CrossWith(pair[1]) # Cruza
                 newPop.append(child1)
                 newPop.append(child2)
-
 
             print(len(newPop))
 
@@ -163,21 +162,6 @@ class Genetic(object):
 
         return toMutate
 
-    def _MakeCross(self, parent1, parent2):
-        """ Realiza la cruza de 2 individuos y devuelve una tupla con los 2 hijos resultantes."""
-        p1Genes = parent1.centroids.flatten()
-        p2Genes = parent2.centroids.flatten()
-
-        crossPoint = randint(1, len(p1Genes) -2)
-
-        child1Genes = p1Genes[:crossPoint].tolist() + p2Genes[crossPoint:].tolist()
-        child2Genes = p2Genes[:crossPoint].tolist() + p1Genes[crossPoint:].tolist()
-
-        child1 = Individual(np.reshape(child1Genes, (parent1.clusters, self.datasetDimension)), self.dataset)
-        child2 = Individual(np.reshape(child2Genes, (parent2.clusters, self.datasetDimension)), self.dataset)
-
-        return child1, child2
-
     def _GetCrossingPairs(self, quantity=1):
         """ Selecciona pares de individuos para ser cruzados."""
         pairs = []
@@ -241,9 +225,11 @@ class Individual(object):
     """
     Representa un individuo potencial solución al problema de clustering.
 
-    El individuo conoce su aptitud, tiene capacidad de mutar sus genes
-    y actualizar su clasificación interna de los puntos al cambiar su
-    estructura.
+     - El individuo conoce su aptitud,
+     - tiene capacidad de mutar sus genes y actualizar su clasificación
+       interna de los puntos al cambiar su estructura.
+     - Además tiene la capacidad de realizar la cruza de sí mismo con otro
+       individuo
     """
 
     def __init__(self, centroids, dataset):
@@ -289,6 +275,21 @@ class Individual(object):
         self.centroids[c][component] += delta # Mutación del centroide
 
         self.Update() # Actualización luego de modificar la estructura
+
+    def CrossWith(self, parent2):
+        """ Realiza la cruza del individuo actual con el parent2 y devuelve una tupla con los 2 hijos resultantes."""
+        p1Genes = self.centroids.flatten()
+        p2Genes = parent2.centroids.flatten()
+
+        crossPoint = randint(1, len(p1Genes) -2)
+
+        child1Genes = p1Genes[:crossPoint].tolist() + p2Genes[crossPoint:].tolist()
+        child2Genes = p2Genes[:crossPoint].tolist() + p1Genes[crossPoint:].tolist()
+
+        child1 = Individual(np.reshape(child1Genes, (self.clusters, self.datasetDimension)), self.dataset)
+        child2 = Individual(np.reshape(child2Genes, (parent2.clusters, self.datasetDimension)), self.dataset)
+
+        return child1, child2
 
     def Fitness(self):
         """ Calcula la aptitud del individuo."""
