@@ -40,7 +40,7 @@ class Genetic(object):
         self.bestIndividual = None
 
         for it in range(self.MAX_ITERATIONS):
-            self.fitness = [i.Fitness() for i in self.population] # 2. Calculo de aptitude de la población
+            self.fitness = [i.Fitness() for i in self.population] # 2. Calculo de aptitud de la población
 
             minFit = np.argmax(self.fitness)
             print('DEBUG - Min fit key %d - value: %f' % (minFit, self.fitness[minFit]))
@@ -248,7 +248,18 @@ class Individual(object):
 
         self.datasetLen, self.datasetDimension = list(dataset.shape)
 
+        self.CalcRanges()
+
         self.Update()
+
+    def CalcRanges(self):
+        self.datasetRanges = []
+
+        for i in range(self.datasetDimension):
+            minValue = min(self.dataset[:, i])
+            maxValue = max(self.dataset[:, i])
+
+            self.datasetRanges.append((minValue, maxValue))
 
     def Update(self):
         """ Actualiza la asignación de puntos del dataset al centroide correspondiente."""
@@ -273,12 +284,9 @@ class Individual(object):
         c = randint(0, self.clusters - 1) # Centroide aleatorio
         component = randint(0, self.datasetDimension - 1) # Componente del centroide
 
-        delta = randint(1, 5)
+        genMutation = uniform(self.datasetRanges[component][0], self.datasetRanges[component][1])
 
-        if uniform(0, 1) < 0.5:
-            delta *= -1
-
-        self.centroids[c][component] += delta # Mutación del centroide
+        self.centroids[c][component] = genMutation # Mutación del centroide
 
         self.Update() # Actualización luego de modificar la estructura
 
