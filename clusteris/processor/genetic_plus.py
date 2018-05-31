@@ -6,8 +6,6 @@ from timer import Timer
 
 import numpy as np
 
-# from genetic.individual import Individual
-
 class Genetic(object):
     INITIAL_POPULATION = 15
     MAX_ITERATIONS = 50
@@ -22,72 +20,79 @@ class Genetic(object):
 
 
     def __init__(self, params):
+        """ Se inicializan los parametros del procesador genético."""
         self.NClusters = params['n_clusters']
 
     def Fit(self, dataset):
+        """ Calcula la mejor distribución de los puntos del dataset, según los parámetros elegidos."""
         t = Timer()
 
         t.AddTime("Start")
         self.dataset = dataset
         self.datasetLen, self.datasetDimension = list(dataset.shape)
 
-        self.population = self._GetInitialPop()
+        self.population = self._GetInitialPop() # 1. Generación de población inicial
 
         t.AddTime("Initial pop")
-
-        t.AddTime("Fitness")
 
         self.bestIndividual = None
 
         for it in range(self.MAX_ITERATIONS):
-            self.fitness = [i.Fitness() for i in self.population]
+            self.fitness = [i.Fitness() for i in self.population] # 2. Calculo de aptitude de la población
 
             minFit = np.argmin(self.fitness)
-            # print('DEBUG - Min fit key %d - value: %f' % (minFit, self.fitness[minFit]))
+            print('DEBUG - Min fit key %d - value: %f' % (minFit, self.fitness[minFit]))
 
-            if (self.fitness[minFit] <= self.FITNESS_THRESHOLD):
+            if (self.fitness[minFit] <= self.FITNESS_THRESHOLD): # 3. Primera condición de parada
                 self.bestIndividual = self.population[minFit]
                 break
 
-            newPop = []
+            newPop = [] # Construcción de la nueva población
+
+            # 4. Selección de individuos. Elitista + Ruleta
 
             # Aseguro al mejor miembro de la población
             eliteInd = self._ElitistSelection()
-
             newPop.append(eliteInd)
 
-            selectionAmount = len(self.population) * self.SELECTION_RATIO
+            # Selecciona el resto por ruleta
+
+            selectionAmount = int(len(self.population) * self.SELECTION_RATIO)
 
             print('DEBUG - Selection amount: %s' % selectionAmount)
-            # Selecciona cantidad de individuos de la población mediante ruleta
-            selected = self._WheelSelection(selectionAmount - 1) # Porque ya tengo uno de elite
 
+            selected = self._WheelSelection(selectionAmount - 1) # Porque ya tengo uno de elite
             newPop.extend(selected)
 
-            crossAmount = len(self.population) * self.CROSSING_RATIO
+            # 5. Cruza pares de individuos seleccionados al azar
+
+            crossAmount = int(len(self.population) * self.CROSSING_RATIO) # Cantidad de individuos resultados de la cruza
 
             print('DEBUG - Crossing amount: %s' % crossAmount)
 
             crossOverflow = crossAmount % 2.0
-            crossAmount = math.ceil(crossAmount / 2.0)
+            crossAmount = math.ceil(crossAmount / 2.0) # Se usa la mitad de pares para generar 2 hijos
 
             print('DEBUG - Overflow: %s' % crossOverflow)
             print('DEBUG - Cross: %s' % crossAmount)
 
-            toCross = self._GetCrossingPairs(crossAmount)
+            toCross = self._GetCrossingPairs(crossAmount) # Selección de pares
 
             for pair in toCross:
-                child1, child2 = self._MakeCross(pair[0], pair[1])
+                child1, child2 = self._MakeCross(pair[0], pair[1]) # Cruza
                 newPop.append(child1)
                 newPop.append(child2)
 
 
             print(len(newPop))
 
+            # 6. Mutación de individuos seleccionados al azar
+
             mutationAmount = int(len(self.population) * self.MUTATION_RATIO)
 
             print('DEBUG - Mutation amount: %s' % mutationAmount)
 
+            # Si se obtuvo un individuo extra en la cruza resto uno para mutar
             if crossOverflow > 0:
                 mutationAmount -= 1
 
@@ -97,6 +102,8 @@ class Genetic(object):
 
             newPop.extend(mutated)
 
+            # El método anterior no asegura individuos mutados por lo tanto
+            # se completa la población con nuevas cruzas si es necesario
             if (len(newPop) < len(self.population)):
                 missingPop = len(self.population) - len(newPop)
 
@@ -119,11 +126,12 @@ class Genetic(object):
 
             t.AddTime("Iteration %d" % it)
 
+        # 7. Ultima condición de parada, fin de las iteraciones
+        # Si no encontré una solución antes, uso la mejor despues del proceso
         if self.bestIndividual == None:
             minFit = np.argmin(self.fitness)
             self.bestIndividual = self.population[minFit]
 
-        print('DEBUG - Genetic Fit.')
         t.AddTime("End")
 
         t.PrintTimes()
@@ -131,14 +139,15 @@ class Genetic(object):
         print('DEBUG - Fitness: %s' % self.fitness[minFit])
 
     def GetCentroids(self):
-        print('DEBUG - Genetic Centroids.')
+        """ Devuelve los centroides calculados."""
         return self.bestIndividual.centroids
 
     def GetLabels(self):
-        print('DEBUG - Genetic Labels.')
+        """ Devuelve un array de etiquetas asociadas a cada punto."""
         return self.bestIndividual.elements
 
     def _GetMutated(self, quantity=1):
+        """ Intenta devolver mutaciones de los individuos de la población, en la cantidad especificada."""
         toMutate = []
 
         for i in range(self.MUTATION_RETRY):
@@ -155,6 +164,7 @@ class Genetic(object):
         return toMutate
 
     def _MakeCross(self, parent1, parent2):
+        """ Realiza la cruza de 2 individuos y devuelve una tupla con los 2 hijos resultantes."""
         p1Genes = parent1.centroids.flatten()
         p2Genes = parent2.centroids.flatten()
 
@@ -169,21 +179,24 @@ class Genetic(object):
         return child1, child2
 
     def _GetCrossingPairs(self, quantity=1):
+        """ Selecciona pares de individuos para ser cruzados."""
         pairs = []
 
-        for i in range(int(quantity)):
+        for i in range(quantity):
             pairs.append(self._RandomSelection(2))
 
         return pairs
 
     def _WheelSelection(self, quantity=1):
+        """ Selección de individuos por método de ruleta."""
+
         # Aptitud total de la población
         sumF = sum(self.fitness)
         # Probabilidades acumuladas asociadas a cada individuo
         prob = [(value + sum(self.fitness[:key])) / sumF for key, value in enumerate(self.fitness)]
         # Ruleta
         p = []
-        for i in range(int(quantity)):
+        for i in range(quantity):
             p.append(uniform(0, 1))
 
         # Elegir individuo de acuerdo a probabilidad calculada
@@ -192,17 +205,20 @@ class Genetic(object):
         return [self.population[key] for key in positions]
 
     def _RandomSelection(self, quantity=1):
+        """ Selección aleatoria de individuos."""
         positions = []
 
-        for i in range(int(quantity)):
+        for i in range(quantity):
             positions.append(randint(0, len(self.population) - 1))
 
         return [self.population[key] for key in positions]
 
     def _ElitistSelection(self):
+        """ Selección elitista del mejor individuo."""
         return self.population[np.argmin(self.fitness)]
 
     def _GetInitialPop(self):
+        """ Generación de población inicial aleatoria basada en puntos existentes."""
         population = []
         for i in range(self.INITIAL_POPULATION):
             tempDataset = self.dataset
@@ -222,8 +238,20 @@ class Genetic(object):
         self.fitness
 
 class Individual(object):
+    """
+    Representa un individuo potencial solución al problema de clustering.
+
+    El individuo conoce su aptitud, tiene capacidad de mutar sus genes
+    y actualizar su clasificación interna de los puntos al cambiar su
+    estructura.
+    """
 
     def __init__(self, centroids, dataset):
+        """
+        Inicializa la estructura del individuo con los centroides y el dataset.
+        Luego actualiza la asignación de puntos del dataset al centroide
+        correspondiente.
+        """
         self.dataset = dataset
         self.centroids = np.array(centroids)
         self.clusters = len(centroids)
@@ -235,19 +263,19 @@ class Individual(object):
         self.Update()
 
     def Update(self):
+        """ Actualiza la asignación de puntos del dataset al centroide correspondiente."""
         for key, value in enumerate(self.dataset):
             distance = []
             points = []
             for c in self.centroids:
-                # centroid = self.centroids[k]
-                d = np.linalg.norm(c - value) # distance
+                d = np.linalg.norm(c - value) # distancia
                 distance.append(d)
                 points.append(value)
 
-            classNo = np.argmin(distance) # Class Number
+            classNo = np.argmin(distance) # La clase del punto
 
-            self.elements.append(classNo)
-            self.classElements[classNo].append(points[classNo])
+            self.elements.append(classNo) # Array clases para cada punto
+            self.classElements[classNo].append(points[classNo]) # Tabla de clases y puntos por clases
 
     def Mutate(self):
         c = randint(0, self.clusters - 1) # Centroide aleatorio
@@ -258,12 +286,12 @@ class Individual(object):
         if uniform(0, 1) < 0.5:
             delta *= -1
 
-        self.centroids[c][component] += delta
+        self.centroids[c][component] += delta # Mutación del centroide
 
-        self.Update()
+        self.Update() # Actualización luego de modificar la estructura
 
     def Fitness(self):
-        # print('DEBUG - Individual Genetic Fitness.')
+        """ Calcula la aptitud del individuo."""
         intercluster = self._Intercluster()
         intracluster = self._Intracluster()
 
@@ -274,7 +302,6 @@ class Individual(object):
         return fitness
 
     def _Intercluster(self):
-        # print('DEBUG - Individual Genetic Intercluster.')
         intercluster = []
 
         for i in range(self.clusters):
@@ -286,7 +313,6 @@ class Individual(object):
         return intercluster
 
     def _Intracluster(self):
-        # print('DEBUG - Individual Genetic Intracluster.')
         intracluster = []
 
         for i in range(self.clusters):
@@ -297,6 +323,8 @@ class Individual(object):
                         d = np.linalg.norm(point2 - point1) # distance
                         distance.append(d)
                     except ValueError, e:
+                        for c in self.centroids:
+                            print(c)
                         print(point2)
                         print(point1)
                         print(e)
