@@ -131,7 +131,7 @@ class Genetic(object):
 
         # 7. Ultima condición de parada, fin de las iteraciones
         # Si no encontré una solución antes, uso la mejor despues del proceso
-        if self.bestIndividual == None:
+        if self.bestIndividual is None:
             minFit = np.argmax(self.fitness)
             self.bestIndividual = self.population[minFit]
 
@@ -264,6 +264,7 @@ class Individual(object):
     def Update(self):
         """ Actualiza la asignación de puntos del dataset al centroide correspondiente."""
 
+        self.fitness = None
         self.elements = []
         self.classElements = [[] for i in range(self.clusters)]
 
@@ -316,15 +317,19 @@ class Individual(object):
 
         # return fitness
 
-        for pointClass in self.classElements:
-            if len(pointClass) == 0:
-                print("Cluster VACIO!!!")
-                return 0
+        if self.fitness is None:
+            for pointClass in self.classElements:
+                if len(pointClass) == 0:
+                    print("Cluster VACIO!!!")
+                    self.fitness = 0
+                    return self.fitness
 
-        fitness = calinski_harabaz_score(self.dataset, self.elements)
-        print("Fitness: %f" % fitness)
+            self.fitness = calinski_harabaz_score(self.dataset, self.elements)
+            print("Fitness: %f" % self.fitness)
 
-        return fitness
+            return self.fitness
+        else:
+            return self.fitness
 
     def _Intercluster(self):
         intercluster = []
