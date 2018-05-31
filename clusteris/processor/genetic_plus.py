@@ -85,13 +85,9 @@ class Genetic(object):
                 newPop.append(child1)
                 newPop.append(child2)
 
-            print(len(newPop))
-
             # 6. Mutación de individuos seleccionados al azar
 
             mutationAmount = int(len(self.population) * self.MUTATION_RATIO)
-
-            print('DEBUG - Mutation amount: %s' % mutationAmount)
 
             # Si se obtuvo un individuo extra en la cruza resto uno para mutar
             if crossOverflow > 0:
@@ -155,12 +151,17 @@ class Genetic(object):
 
         for i in range(self.MUTATION_RETRY):
             tryMutation = [deepcopy(individual) for individual in self._RandomSelection(quantity) if uniform(0, 1) < self.MUTATION_PROBABILITY]
-            toMutate.extend(tryMutation)
+
+            for m in tryMutation:
+                toMutate.append(m)
+                if len(toMutate) >= quantity:
+                    break
 
             if (len(toMutate) >= quantity):
                 break
 
         print(len(toMutate))
+        print('DEBUG - Actual mutations: %s' % mutationAmount)
         for i in toMutate:
             i.Mutate()
 
