@@ -35,7 +35,6 @@ class MainView (wx.Frame):
 
         self.BuildDatasetUI(bSizerLeft)
         self.BuildProcessUI(bSizerLeft)
-        self.BuildActionUI(bSizerLeft)
 
         bSizerPanel.Add(bSizerLeft, 1, wx.ALL, 1)
 
@@ -49,6 +48,8 @@ class MainView (wx.Frame):
         self.panelMain.Layout()
         bSizerPanel.Fit(self.panelMain)
         self.sizerMain.Add(self.panelMain, 1, wx.ALL|wx.EXPAND, 0)
+
+        self.BuildActionUI(self.sizerMain)
 
         self.SetSizer(self.sizerMain)
         self.Layout()
@@ -154,7 +155,7 @@ class MainView (wx.Frame):
         """The action button UI. Start processing the dataset."""
         bSizerAction = wx.BoxSizer(wx.VERTICAL)
 
-        self.buttonProcess = wx.Button(self.panelMain, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.buttonProcess = wx.Button(self, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
         bSizerAction.Add(self.buttonProcess, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
         container.Add(bSizerAction, 0, wx.EXPAND, 0)
