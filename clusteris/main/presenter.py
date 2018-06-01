@@ -49,6 +49,9 @@ class Presenter(object):
         self.view.SetCentroidSpinValue(self.params.CENTROID_DEFAULT_VALUE)
         self.view.SetAlgorithmList(self.params.CLUSTERING_ALGORITHMS)
         self.view.SetAlgorithmSelection(self.params.CLUSTERING_ALGORITHM_DEFAULT)
+
+        self._DisablePlotterOptions()
+
         self.view.DisableProcessButton()
 
     def ShowFileDialog(self):
@@ -87,6 +90,7 @@ class Presenter(object):
             self.dataset = pd.read_csv(self.datasetPath, header=parseHeader, sep=delimiter)
 
             self.datasetSamplesCount, self.datasetFeaturesCount = list(self.dataset.shape)
+            self.columnNames = ["Column %s" % str(c) for c in self.dataset.columns]
 
             attributes = ", ".join(str(c) for c in self.dataset.columns)
 
@@ -100,8 +104,24 @@ class Presenter(object):
 
             self.view.EnableProcessButton()
 
+            if (self.datasetFeaturesCount == 2):
+                self.view.Enable2DRadio()
+
+                self.view.SetXAxeList(self.columnNames)
+                self.view.SetYAxeList(self.columnNames)
+                self.view.SetXAxeSelection(0)
+                self.view.SetYAxeSelection(1)
+
         except IOError:
             self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % self.datasetPath)
+
+    def _DisablePlotterOptions(self):
+        self.view.Disable2DRadio()
+        self.view.Disable3DRadio()
+
+        self.view.DisableXAxeChoice()
+        self.view.DisableYAxeChoice()
+        self.view.DisableZAxeChoice()
 
     def _DetectDelimiter(self, path):
         """Tries to infer the delimiter symbol in a CSV file using csv Sniffer class."""

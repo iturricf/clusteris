@@ -239,6 +239,54 @@ class MainView (wx.Frame):
     def EnableProcessButton(self):
         self.buttonProcess.Enable()
 
+    def Disable2DRadio(self):
+        self.radioBtn2D.Disable()
+
+    def Disable3DRadio(self):
+        self.radioBtn3D.Disable()
+
+    def Enable2DRadio(self):
+        self.radioBtn2D.Enable()
+
+    def Enable3DRadio(self):
+        self.radioBtn3D.Enable()
+
+    def DisableXAxeChoice(self):
+        self.choiceXAxe.Disable()
+
+    def DisableYAxeChoice(self):
+        self.choiceYAxe.Disable()
+
+    def DisableZAxeChoice(self):
+        self.choiceZAxe.Disable()
+
+    def EnableXAxeChoice(self):
+        self.choiceXAxe.Enable()
+
+    def EnableYAxeChoice(self):
+        self.choiceYAxe.Enable()
+
+    def EnableZAxeChoice(self):
+        self.choiceZAxe.Enable()
+
+    def SetXAxeList(self, value):
+        self.choiceXAxe.SetItems(value)
+
+    def SetXAxeSelection(self, value):
+        self.choiceXAxe.SetSelection(value)
+
+    def SetYAxeList(self, value):
+        self.choiceYAxe.SetItems(value)
+
+    def SetYAxeSelection(self, value):
+        self.choiceYAxe.SetSelection(value)
+
+    def SetZAxeList(self, value):
+        self.choiceZAxe.SetItems(value)
+
+    def SetZAxeSelection(self, value):
+        self.choiceZAxe.SetSelection(value)
+
     def ShowFileDialog(self):
         """Shows file dialog and dispatch custom event after dataset file is selected."""
 
