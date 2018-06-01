@@ -128,7 +128,7 @@ class MainView (wx.Frame):
         """Processing params."""
         bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.labelCentroids = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Centroides", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelCentroids = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Cantidad de Clases", wx.DefaultPosition, wx.DefaultSize, 0)
         self.labelCentroids.Wrap(-1)
         bSizerParamK.Add(self.labelCentroids, 1, wx.ALL, 10)
 
