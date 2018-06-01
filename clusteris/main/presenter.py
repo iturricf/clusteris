@@ -104,6 +104,8 @@ class Presenter(object):
 
             self.view.EnableProcessButton()
 
+            self.columnsForAxes = range(3)
+
             if (self.datasetFeaturesCount == 2):
                 self.view.Enable2DRadio()
 
@@ -122,12 +124,15 @@ class Presenter(object):
     def Radio2DClicked(self, value):
         print('DEBUG - Plotter 2D: %s' % value)
         if value:
+            self.axesAvailable = 2
             self._SetAllAxesList(self.columnNames)
             self.view.SetZAxeList([])
             self.view.DisableZAxeChoice()
 
             self.view.SetXAxeSelection(0)
+            self.SetSelectedAxe(0, 0)
             self.view.SetYAxeSelection(1)
+            self.SetSelectedAxe(1, 1)
 
             if (self.datasetFeaturesCount > 2):
                 self.view.EnableXAxeChoice()
@@ -136,18 +141,27 @@ class Presenter(object):
     def Radio3DClicked(self, value):
         print('DEBUG - Plotter 3D: %s' % value)
         if value:
+            self.axesAvailable = 3
             self._SetAllAxesList(self.columnNames)
 
             self._DisableAllLists()
 
             self.view.SetXAxeSelection(0)
+            self.SetSelectedAxe(0, 0)
             self.view.SetYAxeSelection(1)
+            self.SetSelectedAxe(1, 1)
             self.view.SetZAxeSelection(2)
+            self.SetSelectedAxe(2, 2)
 
             if (self.datasetFeaturesCount > 3):
                 self.view.EnableXAxeChoice()
                 self.view.EnableYAxeChoice()
                 self.view.EnableZAxeChoice()
+
+    def SetSelectedAxe(self, axe, value):
+        print('DEBUG - Selected axe value: %d - %d' % (axe, value))
+        self.columnsForAxes[axe] = value
+        print("Axes:: %s" % self.columnsForAxes)
 
     def _DisablePlotterOptions(self):
         self.view.Disable2DRadio()
@@ -165,6 +179,13 @@ class Presenter(object):
         self.view.DisableYAxeChoice()
         self.view.DisableZAxeChoice()
 
+    def _IsPlotterConfigValid(self):
+        for i in range(self.axesAvailable - 1):
+            if self.columnsForAxes[i] == self.columnsForAxes[i+1]:
+                return False
+
+        return True
+
     def _DetectDelimiter(self, path):
         """Tries to infer the delimiter symbol in a CSV file using csv Sniffer class."""
         sniffer = csv.Sniffer()
@@ -177,6 +198,10 @@ class Presenter(object):
     def Process(self):
         if self.dataset is None:
             self.view.ShowErrorMessage("No se ha seleccionado el dataset aún.")
+            return False
+
+        if not self._IsPlotterConfigValid():
+            self.view.ShowErrorMessage("Las columnas para los ejes seleccionados debe ser distinta para cada uno.")
             return False
 
         samples = []
@@ -211,19 +236,19 @@ class Presenter(object):
         if (self.clusteringAlgorithm == 0):
             clusters = 1
 
-        if (self.datasetFeaturesCount < 3):
+        if (self.axesAvailable < 3):
             clusters = self.centroidsNumber
             if (self.clusteringAlgorithm == 0):
                 clusters = 1
-            plotter.PlotSamples2D(Dataset, labels=labels, clusters=clusters)
+            plotter.PlotSamples2D(Dataset, axes=self.columnsForAxes, labels=labels, clusters=clusters)
 
             if (len(centroids)):
-                plotter.PlotCentroids2D(centroids)
+                plotter.PlotCentroids2D(centroids, axes=self.columnsForAxes)
 
         else:
-            plotter.PlotSamples3D(Dataset, labels=labels, clusters=clusters)
+            plotter.PlotSamples3D(Dataset, axes=self.columnsForAxes, labels=labels, clusters=clusters)
 
             if (len(centroids)):
-                plotter.PlotCentroids3D(centroids)
+                plotter.PlotCentroids3D(centroids, axes=self.columnsForAxes)
 
         plotter.Show()
