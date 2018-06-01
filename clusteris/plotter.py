@@ -29,7 +29,7 @@ class Plotter(object):
 
         return cmap(norm(float(intColor)))
 
-    def PlotSamples2D(self, dataset, labels, clusters):
+    def PlotSamples2D(self, dataset, axes, labels, clusters):
         print('DEBUG - Plotter PlotSamples2D.')
 
         for i in range(clusters):
@@ -41,15 +41,15 @@ class Plotter(object):
             print(points.shape)
             print(len(label))
 
-            plt.scatter(points[:, 0], points[:, 1], s=self.pointSize, c=color, marker=marker, label=label)
+            plt.scatter(points[:, axes[0]], points[:, axes[1]], s=self.pointSize, c=color, marker=marker, label=label)
 
-    def PlotCentroids2D(self, c):
+    def PlotCentroids2D(self, c, axes):
         print('DEBUG - Plotter PlotCentroids2D.')
-        plt.scatter(c[:, 0], c[:, 1], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroide")
+        plt.scatter(c[:, axes[0]], c[:, axes[1]], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroide")
 
         datacursor(hover=True, formatter='x: {x:.5f}\ny: {y:.5f}\n{label}'.format)
 
-    def PlotSamples3D(self, dataset, labels, clusters):
+    def PlotSamples3D(self, dataset, axes, labels, clusters):
         print('DEBUG - Plotter PlotSamples3D.')
 
          # 3D Axes for 3D plotting
@@ -62,11 +62,11 @@ class Plotter(object):
             marker = self.pointsMarkers[i]
             label = "Clase %d" % i
 
-            self.ax.scatter(points[:, 0], points[:, 1], points[:, 2], s=self.pointSize, c=color, marker=marker, label=label)
+            self.ax.scatter(points[:, axes[0]], points[:, axes[1]], points[:, axes[2]], s=self.pointSize, c=color, marker=marker, label=label)
 
-    def PlotCentroids3D(self, c):
+    def PlotCentroids3D(self, c, axes):
         print('DEBUG - Plotter PlotCentroids3D.')
-        self.ax.scatter(c[:, 0], c[:, 1], c[:, 2], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroide")
+        self.ax.scatter(c[:, axes[0]], c[:, axes[1]], c[:, axes[2]], marker=self.centroidMarker, c=self.centroidColor, s=self.centroidSize, label="Centroide")
 
         datacursor(hover=True, formatter='x: {x:.5f}\ny: {y:.5f}\nz: {z:.5f}\n{label}'.format)
 
