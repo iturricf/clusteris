@@ -15,6 +15,10 @@ class Interactor(object):
         view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
         view.choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
         view.spinCentroidsParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
+
+        view.radioBtn2D.Bind(wx.EVT_RADIOBUTTON, self.OnRadioButton2DClicked)
+        view.radioBtn3D.Bind(wx.EVT_RADIOBUTTON, self.OnRadioButton3DClicked)
+
         view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
 
     def OnFileSelectorClicked(self, evt):
@@ -32,5 +36,12 @@ class Interactor(object):
     def OnCentroidSpinCtrl(self, evt):
         self.presenter.SetCentroidParam(evt.GetPosition())
 
+    def OnRadioButton2DClicked(self, evt):
+        self.presenter.Radio2DClicked(evt.IsChecked())
+
+    def OnRadioButton3DClicked(self, evt):
+        self.presenter.Radio3DClicked(evt.IsChecked())
+
     def OnProcessClicked(self, evt):
         self.presenter.Process()
+

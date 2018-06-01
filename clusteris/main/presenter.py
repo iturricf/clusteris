@@ -107,18 +107,60 @@ class Presenter(object):
             if (self.datasetFeaturesCount == 2):
                 self.view.Enable2DRadio()
 
-                self.view.SetXAxeList(self.columnNames)
-                self.view.SetYAxeList(self.columnNames)
-                self.view.SetXAxeSelection(0)
-                self.view.SetYAxeSelection(1)
+                self.Radio2DClicked(True)
+
+            if (self.datasetFeaturesCount >= 3):
+                self.view.Enable2DRadio()
+                self.view.Enable3DRadio()
+                self.view.Set3DSelected()
+
+                self.Radio3DClicked(True)
 
         except IOError:
             self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % self.datasetPath)
+
+    def Radio2DClicked(self, value):
+        print('DEBUG - Plotter 2D: %s' % value)
+        if value:
+            self._SetAllAxesList(self.columnNames)
+            self.view.SetZAxeList([])
+            self.view.DisableZAxeChoice()
+
+            self.view.SetXAxeSelection(0)
+            self.view.SetYAxeSelection(1)
+
+            if (self.datasetFeaturesCount > 2):
+                self.view.EnableXAxeChoice()
+                self.view.EnableYAxeChoice()
+
+    def Radio3DClicked(self, value):
+        print('DEBUG - Plotter 3D: %s' % value)
+        if value:
+            self._SetAllAxesList(self.columnNames)
+
+            self._DisableAllLists()
+
+            self.view.SetXAxeSelection(0)
+            self.view.SetYAxeSelection(1)
+            self.view.SetZAxeSelection(2)
+
+            if (self.datasetFeaturesCount > 3):
+                self.view.EnableXAxeChoice()
+                self.view.EnableYAxeChoice()
+                self.view.EnableZAxeChoice()
 
     def _DisablePlotterOptions(self):
         self.view.Disable2DRadio()
         self.view.Disable3DRadio()
 
+        self._DisableAllLists()
+
+    def _SetAllAxesList(self, value):
+        self.view.SetXAxeList(self.columnNames)
+        self.view.SetYAxeList(self.columnNames)
+        self.view.SetZAxeList(self.columnNames)
+
+    def _DisableAllLists(self):
         self.view.DisableXAxeChoice()
         self.view.DisableYAxeChoice()
         self.view.DisableZAxeChoice()

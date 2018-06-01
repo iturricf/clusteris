@@ -287,6 +287,12 @@ class MainView (wx.Frame):
     def SetZAxeSelection(self, value):
         self.choiceZAxe.SetSelection(value)
 
+    def Set3DSelected(self):
+        self.radioBtn3D.SetValue(True)
+
+    def Set2DSelected(self):
+        self.radioBtn2D.SetValue(True)
+
     def ShowFileDialog(self):
         """Shows file dialog and dispatch custom event after dataset file is selected."""
 
