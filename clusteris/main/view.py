@@ -30,7 +30,7 @@ class MainView (wx.Frame):
 
         self.panelMain = wx.Panel(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
 
-        bSizerPanel = wx.BoxSizer(wx.VERTICAL)
+        bSizerPanel = wx.BoxSizer(wx.HORIZONTAL)
         bSizerLeft = wx.BoxSizer(wx.VERTICAL)
 
         self.BuildDatasetUI(bSizerLeft)
@@ -39,16 +39,87 @@ class MainView (wx.Frame):
 
         bSizerPanel.Add(bSizerLeft, 1, wx.ALL, 1)
 
+        bSizerRight = wx.BoxSizer(wx.VERTICAL)
+
+        self.BuildPlotterOptionsUI(bSizerRight)
+
+        bSizerPanel.Add(bSizerRight, 1, wx.ALL, 1)
+
         self.panelMain.SetSizer(bSizerPanel)
         self.panelMain.Layout()
         bSizerPanel.Fit(self.panelMain)
-        self.sizerMain.Add(self.panelMain, 1, wx.EXPAND|wx.ALL, 0)
+        self.sizerMain.Add(self.panelMain, 1, wx.ALL|wx.EXPAND, 0)
 
         self.SetSizer(self.sizerMain)
         self.Layout()
 
         # Add status bar
         self.statusBar = self.CreateStatusBar(1, wx.STB_SIZEGRIP, wx.ID_ANY)
+
+    def BuildPlotterOptionsUI(self, container):
+        """Builds the plotter parameters UI."""
+        sbSizerPlotter = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Graficador"), wx.VERTICAL)
+
+        bSizerDimension = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.radioBtn2D = wx.RadioButton(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, u"2 Dimensiones", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerDimension.Add(self.radioBtn2D, 0, wx.ALL, 5)
+
+        self.radioBtn3D = wx.RadioButton(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, u"3 Dimensiones", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerDimension.Add(self.radioBtn3D, 0, wx.ALL, 5)
+
+
+        sbSizerPlotter.Add(bSizerDimension, 0, wx.ALIGN_CENTER, 0)
+
+        bSizerTitle = wx.BoxSizer(wx.VERTICAL)
+
+        self.labelDescription = wx.StaticText(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, u"Seleccionar atributos para cada Eje:", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelDescription.Wrap(-1)
+        bSizerTitle.Add(self.labelDescription, 0, wx.LEFT, 10)
+
+
+        sbSizerPlotter.Add(bSizerTitle, 0, wx.ALL, 0)
+
+        bSizerXAxe = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.labelXAxe = wx.StaticText(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, u"Eje X", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelXAxe.Wrap(-1)
+        bSizerXAxe.Add(self.labelXAxe, 1, wx.ALL|wx.EXPAND, 10)
+
+
+        self.choiceXAxe = wx.Choice(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, [], 0)
+        self.choiceXAxe.SetSelection(0)
+        bSizerXAxe.Add(self.choiceXAxe, 1, wx.ALL, 5)
+
+
+        sbSizerPlotter.Add(bSizerXAxe, 1, wx.EXPAND, 0)
+
+        bSizerYAxe = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.labelYAxe = wx.StaticText(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, u"Eje Y", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelYAxe.Wrap(-1)
+        bSizerYAxe.Add(self.labelYAxe, 1, wx.ALL|wx.EXPAND, 10)
+
+        self.choiceYAxe = wx.Choice(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, [], 0)
+        self.choiceYAxe.SetSelection(0)
+        bSizerYAxe.Add(self.choiceYAxe, 1, wx.ALL, 5)
+
+
+        sbSizerPlotter.Add(bSizerYAxe, 1, wx.EXPAND, 0)
+
+        bSizerZAxe = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.labelZAxe = wx.StaticText(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, u"Eje Z", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelZAxe.Wrap(-1)
+        bSizerZAxe.Add(self.labelZAxe, 1, wx.ALL|wx.EXPAND, 10)
+
+        self.choiceZAxe = wx.Choice(sbSizerPlotter.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, [], 0)
+        self.choiceZAxe.SetSelection(0)
+        bSizerZAxe.Add(self.choiceZAxe, 1, wx.ALL, 5)
+
+        sbSizerPlotter.Add(bSizerZAxe, 1, wx.EXPAND, 0)
+
+        container.Add(sbSizerPlotter, 1, wx.ALL|wx.EXPAND, 5)
 
     def BuildDatasetUI(self, container):
         """Builds dataset file selection UI."""
