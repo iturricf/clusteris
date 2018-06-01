@@ -160,8 +160,7 @@ class Genetic(object):
             if (len(toMutate) >= quantity):
                 break
 
-        print(len(toMutate))
-        print('DEBUG - Actual mutations: %s' % mutationAmount)
+        print('DEBUG - Actual mutations: %s' % len(toMutate))
         for i in toMutate:
             i.Mutate()
 
