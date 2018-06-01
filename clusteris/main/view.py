@@ -161,6 +161,12 @@ class MainView (wx.Frame):
     def SetAlgorithmSelection(self, value):
         self.choiceAlgorithm.SetSelection(value)
 
+    def DisableProcessButton(self):
+        self.buttonProcess.Disable()
+
+    def EnableProcessButton(self):
+        self.buttonProcess.Enable()
+
     def ShowFileDialog(self):
         """Shows file dialog and dispatch custom event after dataset file is selected."""
 

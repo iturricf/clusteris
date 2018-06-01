@@ -49,6 +49,7 @@ class Presenter(object):
         self.view.SetCentroidSpinValue(self.params.CENTROID_DEFAULT_VALUE)
         self.view.SetAlgorithmList(self.params.CLUSTERING_ALGORITHMS)
         self.view.SetAlgorithmSelection(self.params.CLUSTERING_ALGORITHM_DEFAULT)
+        self.view.DisableProcessButton()
 
     def ShowFileDialog(self):
         self.view.ShowFileDialog()
@@ -97,6 +98,8 @@ class Presenter(object):
             self.view.SetLabelFeaturesCountText('Cantidad de atributos: %d' % self.datasetFeaturesCount)
             self.view.SetStatusText('Archivo dataset: %s' % self.datasetPath)
 
+            self.view.EnableProcessButton()
+
         except IOError:
             self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % self.datasetPath)
 
@@ -110,6 +113,10 @@ class Presenter(object):
             return dialect.delimiter
 
     def Process(self):
+        if self.dataset is None:
+            self.view.ShowErrorMessage("No se ha seleccionado el dataset aún.")
+            return False
+
         samples = []
 
         # Split Pandas DataFrame into columns
