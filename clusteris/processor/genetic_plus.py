@@ -25,7 +25,7 @@ class Genetic(object):
         """ Se inicializan los parametros del procesador genético."""
         self.NClusters = params['n_clusters']
 
-    def Fit(self, dataset):
+    def Fit(self, dataset, nPopulation, nIterations):
         """ Calcula la mejor distribución de los puntos del dataset, según los parámetros elegidos."""
         t = Timer()
 
@@ -33,13 +33,13 @@ class Genetic(object):
         self.dataset = dataset
         self.datasetLen, self.datasetDimension = list(dataset.shape)
 
-        self.population = self._GetInitialPop() # 1. Generación de población inicial
+        self.population = self._GetInitialPop(nPopulation) # 1. Generación de población inicial
 
         t.AddTime("Initial pop")
 
         self.bestIndividual = None
 
-        for it in range(self.MAX_ITERATIONS):
+        for it in range(nIterations):
             self.fitness = [i.Fitness() for i in self.population] # 2. Calculo de aptitud de la población
 
             minFit = np.argmax(self.fitness)
@@ -161,6 +161,7 @@ class Genetic(object):
                 break
 
         print('DEBUG - Actual mutations: %s' % len(toMutate))
+
         for i in toMutate:
             i.Mutate()
 
@@ -205,10 +206,10 @@ class Genetic(object):
         """ Selección elitista del mejor individuo."""
         return self.population[np.argmax(self.fitness)]
 
-    def _GetInitialPop(self):
+    def _GetInitialPop(self, nPopulation):
         """ Generación de población inicial aleatoria basada en puntos existentes."""
         population = []
-        for i in range(self.INITIAL_POPULATION):
+        for i in range(nPopulation):
             tempDataset = self.dataset
 
             individual = []

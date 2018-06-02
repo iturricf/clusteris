@@ -12,18 +12,18 @@ class Interactor(object):
 
         view.buttonSelectDataset.Bind(wx.EVT_BUTTON, self.OnFileSelectorClicked)
         view.checkParseFeatures.Bind(wx.EVT_CHECKBOX, self.OnParseAttributesToggle)
-        view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
+        view.buttonGraphic.Bind(wx.EVT_BUTTON, self.OnGraphicClicked)
         view.choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
         view.spinCentroidsParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
-
         view.radioBtn2D.Bind(wx.EVT_RADIOBUTTON, self.OnRadioButton2DClicked)
         view.radioBtn3D.Bind(wx.EVT_RADIOBUTTON, self.OnRadioButton3DClicked)
-
         view.choiceXAxe.Bind(wx.EVT_CHOICE, self.OnXAxeSelected)
         view.choiceYAxe.Bind(wx.EVT_CHOICE, self.OnYAxeSelected)
         view.choiceZAxe.Bind(wx.EVT_CHOICE, self.OnZAxeSelected)
-
+        view.spinPopulationParam.Bind(wx.EVT_SPINCTRL, self.OnPopulationSpinCtrl)
+        view.spinIterationParam.Bind(wx.EVT_SPINCTRL, self.OnIterationsSpinCtrl)
         view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
+        view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
 
     def OnFileSelectorClicked(self, evt):
         self.presenter.ShowFileDialog()
@@ -58,3 +58,14 @@ class Interactor(object):
     def OnProcessClicked(self, evt):
         self.presenter.Process()
 
+    def OnPopulationSpinCtrl(self, evt):
+        self.presenter.SetPopulationParam(evt.GetPosition())
+
+    def OnIterationsSpinCtrl(self, evt):
+        self.presenter.SetIterationParam(evt.GetPosition())
+
+    def OnProcessClicked(self, evt):
+        self.presenter.Process(False)
+
+    def OnGraphicClicked(self, evt):
+        self.presenter.Process(True)

@@ -34,6 +34,7 @@ class MainView (wx.Frame):
         bSizerLeft = wx.BoxSizer(wx.VERTICAL)
 
         self.BuildDatasetUI(bSizerLeft)
+        self.BuildDatasetGraphicUI(bSizerLeft)
         self.BuildProcessUI(bSizerLeft)
 
         bSizerPanel.Add(bSizerLeft, 1, wx.ALL, 1)
@@ -149,6 +150,10 @@ class MainView (wx.Frame):
 
         self.BuildParamsUI(sbSizerProcess)
 
+        self.BuildPopulationUI(sbSizerProcess)
+
+        self.BuildIterationUI(sbSizerProcess)
+
         container.Add(sbSizerProcess, 1, wx.ALL|wx.EXPAND, 5)
 
     def BuildActionUI(self, container):
@@ -196,6 +201,15 @@ class MainView (wx.Frame):
 
         container.Add(bSizerDatasetStats, 0, wx.ALL, 0)
 
+    def BuildDatasetGraphicUI(self, container):
+        """Dataset graphic."""
+        bSizerDatasetGraphic = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.buttonGraphic = wx.Button(self.panelMain, wx.ID_ANY, u"Graficar", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerDatasetGraphic.Add(self.buttonGraphic, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+
+        container.Add(bSizerDatasetGraphic, 0, wx.CENTER, 0)
+
     def BuildParamsUI(self, container):
         """Processing params."""
         bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
@@ -206,6 +220,32 @@ class MainView (wx.Frame):
 
         self.spinCentroidsParam = wx.SpinCtrl(container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
         bSizerParamK.Add(self.spinCentroidsParam, 1, wx.ALL, 5)
+
+        container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
+    
+    def BuildPopulationUI(self, container):
+        """Processing params."""
+        bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.labelPopulation = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Cantidad de Individuos", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelPopulation.Wrap(-1)
+        bSizerParamK.Add(self.labelPopulation, 1, wx.ALL, 10)
+
+        self.spinPopulationParam = wx.SpinCtrl(container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
+        bSizerParamK.Add(self.spinPopulationParam, 1, wx.ALL, 5)
+
+        container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
+    
+    def BuildIterationUI(self, container):
+        """Processing params."""
+        bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.labelIteration = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"N° de Iteraciones", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelIteration.Wrap(-1)
+        bSizerParamK.Add(self.labelIteration, 1, wx.ALL, 10)
+
+        self.spinIterationParam = wx.SpinCtrl(container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
+        bSizerParamK.Add(self.spinIterationParam, 1, wx.ALL, 5)
 
         container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
 
@@ -226,6 +266,24 @@ class MainView (wx.Frame):
 
     def SetCentroidSpinValue(self, value):
         self.spinCentroidsParam.SetValue(value)
+
+    def SetLabelPopulationText(self, value):
+        self.labelPopulation.SetLabel(value)
+
+    def SetPopulationSpinRange(self, min, max):
+        self.spinPopulationParam.SetRange(min, max)
+
+    def SetPopulationSpinValue(self, value):
+        self.spinPopulationParam.SetValue(value)
+
+    def SetLabelIterationText(self, value):
+        self.labelIteration.SetLabel(value)
+
+    def SetIterationSpinRange(self, min, max):
+        self.spinIterationParam.SetRange(min, max)
+
+    def SetIterationSpinValue(self, value):
+        self.spinIterationParam.SetValue(value)
 
     def SetAlgorithmList(self, value):
         self.choiceAlgorithm.SetItems(value)
