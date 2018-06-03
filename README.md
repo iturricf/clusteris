@@ -3,11 +3,7 @@
 Este trabajo consiste en implementar algoritmos genéticos que permitan encontrar clusters en bases de datos.
 
 ## Requirements:
-<<<<<<< HEAD
-* Python 2.7.15 (with pip included)
-=======
 * Python 2.7.12
->>>>>>> genetic-parameters
 
 Además las siguientes librerías:
 * wxPython (pip install -U wxPython)
