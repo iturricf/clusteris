@@ -34,7 +34,6 @@ class MainView (wx.Frame):
         bSizerLeft = wx.BoxSizer(wx.VERTICAL)
 
         self.BuildDatasetUI(bSizerLeft)
-        self.BuildDatasetGraphicUI(bSizerLeft)
         self.BuildProcessUI(bSizerLeft)
 
         bSizerPanel.Add(bSizerLeft, 1, wx.ALL, 1)
@@ -158,12 +157,15 @@ class MainView (wx.Frame):
 
     def BuildActionUI(self, container):
         """The action button UI. Start processing the dataset."""
-        bSizerAction = wx.BoxSizer(wx.VERTICAL)
+        bSizerAction = wx.BoxSizer(wx.HORIZONTAL)
+        
+        self.buttonGraphic = wx.Button(self, wx.ID_ANY, u"Graficar", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerAction.Add(self.buttonGraphic, 0, wx.CENTER|wx.ALL, 5)
 
         self.buttonProcess = wx.Button(self, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
-        bSizerAction.Add(self.buttonProcess, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+        bSizerAction.Add(self.buttonProcess, 0, wx.CENTER|wx.ALL, 5)
 
-        container.Add(bSizerAction, 0, wx.EXPAND, 0)
+        container.Add(bSizerAction, 0, wx.CENTER, 0)
 
     def BuildFileSelectionUI(self, container):
         """Dataset file select."""
@@ -200,15 +202,6 @@ class MainView (wx.Frame):
         bSizerDatasetStats.Add(self.labelFeaturesCount, 0, wx.ALL, 5)
 
         container.Add(bSizerDatasetStats, 0, wx.ALL, 0)
-
-    def BuildDatasetGraphicUI(self, container):
-        """Dataset graphic."""
-        bSizerDatasetGraphic = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.buttonGraphic = wx.Button(self.panelMain, wx.ID_ANY, u"Graficar", wx.DefaultPosition, wx.DefaultSize, 0)
-        bSizerDatasetGraphic.Add(self.buttonGraphic, 0, wx.ALIGN_CENTER|wx.ALL, 5)
-
-        container.Add(bSizerDatasetGraphic, 0, wx.CENTER, 0)
 
     def BuildParamsUI(self, container):
         """Processing params."""
