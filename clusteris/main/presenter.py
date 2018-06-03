@@ -37,6 +37,8 @@ class Presenter(object):
         self.datasetFeaturesCount = 0
         self.clusteringAlgorithm = self.params.CLUSTERING_ALGORITHM_DEFAULT
         self.centroidsNumber = self.params.CENTROID_DEFAULT_VALUE
+        self.populationNumber = self.params.POPULATION_DEFAULT_VALUE
+        self.iterationsNumber = self.params.ITERATION_DEFAULT_VALUE
         self.samples = []
 
     def InitView(self):
@@ -47,6 +49,12 @@ class Presenter(object):
         self.view.SetStatusBarText('Archivo dataset: No seleccionado.')
         self.view.SetCentroidSpinRange(self.params.CENTROID_MIN_VALUE, self.params.CENTROID_MAX_VALUE)
         self.view.SetCentroidSpinValue(self.params.CENTROID_DEFAULT_VALUE)
+        self.view.SetLabelPopulationText("Cantidad de individuos [" + str(self.params.POPULATION_MIN_VALUE) + " - " + str(self.params.POPULATION_MAX_VALUE) + "]")
+        self.view.SetPopulationSpinRange(self.params.POPULATION_MIN_VALUE, self.params.POPULATION_MAX_VALUE)
+        self.view.SetPopulationSpinValue(self.params.POPULATION_DEFAULT_VALUE)
+        self.view.SetLabelIterationText("Cantidad de iteraciones [" + str(self.params.ITERATION_MIN_VALUE) + " - " + str(self.params.ITERATION_MAX_VALUE) + "]")
+        self.view.SetIterationSpinRange(self.params.ITERATION_MIN_VALUE, self.params.ITERATION_MAX_VALUE)
+        self.view.SetIterationSpinValue(self.params.ITERATION_DEFAULT_VALUE)
         self.view.SetAlgorithmList(self.params.CLUSTERING_ALGORITHMS)
         self.view.SetAlgorithmSelection(self.params.CLUSTERING_ALGORITHM_DEFAULT)
 
@@ -64,6 +72,14 @@ class Presenter(object):
     def SetCentroidParam(self, value):
         print("DEBUG - Selected value: %d" % value)
         self.centroidsNumber = value
+
+    def SetPopulationParam(self, value):
+        print("DEBUG - Population value: %d" % value)
+        self.populationNumber = value
+
+    def SetIterationParam(self, value):
+        print("DEBUG - Iteration value: %d" % value)
+        self.iterationsNumber = value
 
     def ToggleParseAttributes(self, isChecked):
         print('DEBUG - Parse attributes: %s' % isChecked)
@@ -195,7 +211,7 @@ class Presenter(object):
             dialect = sniffer.sniff(line)
             return dialect.delimiter
 
-    def Process(self):
+    def Process(self, graphic):
         if self.dataset is None:
             self.view.ShowErrorMessage("No se ha seleccionado el dataset aún.")
             return False
@@ -213,6 +229,12 @@ class Presenter(object):
         # Convert DataFrame columns into Numpy Array
         Dataset = np.array(list(zip(*samples)))
 
+        if graphic:
+            self.SetAlgorithm(0, "Graphic")
+        else:
+            if self.clusteringAlgorithm == 0:
+                return
+
         className = self.params.CLUSTERING_PROCESSORS[self.clusteringAlgorithm]
 
         procModule = []
@@ -224,7 +246,13 @@ class Presenter(object):
         procClass = getattr(procModule[self.clusteringAlgorithm], className)
 
         processor = procClass({'n_clusters': self.centroidsNumber})
-        processor.Fit(Dataset)
+        if self.clusteringAlgorithm == 0:
+            processor.Fit(Dataset)
+        else:
+            if self.clusteringAlgorithm == 1:
+                processor.Fit(Dataset)
+            if self.clusteringAlgorithm == 2:
+                processor.Fit(Dataset, self.populationNumber, self.iterationsNumber)
 
         labels = processor.GetLabels()
         centroids = processor.GetCentroids()
