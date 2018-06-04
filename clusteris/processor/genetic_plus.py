@@ -33,6 +33,7 @@ class Genetic(object):
         t = Timer()
 
         # self.listener.Start()
+        self.listener.SetMaxRange(self.MAX_ITERATIONS)
 
         t.AddTime("Start")
         self.dataset = dataset
@@ -130,7 +131,7 @@ class Genetic(object):
 
             t.AddTime("Iteration %d" % it)
 
-            self.listener.Update(it+10)
+            self.listener.Update(it)
 
         # 7. Ultima condición de parada, fin de las iteraciones
         # Si no encontré una solución antes, uso la mejor despues del proceso

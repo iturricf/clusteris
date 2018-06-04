@@ -19,6 +19,9 @@ class ProgressListener(object):
         # self.progressThread.setDaemon(True)
         # self.progressThread.start()
 
+    def SetMaxRange(self, maxRange):
+        self.progress.SetRange(maxRange)
+
     def Update(self, taskProgress):
         self.progress.Update(taskProgress)
 
