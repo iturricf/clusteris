@@ -2,6 +2,7 @@
 
 import csv
 import threading
+import time
 
 import numpy as np
 import pandas as pd
@@ -15,7 +16,6 @@ from model import Results
 from plotter import Plotter
 from processor.genetic_plus import Genetic
 from processor.kmeans import KMeans
-from progress import ProgressListener
 
 class Presenter(object):
     """
@@ -40,6 +40,7 @@ class Presenter(object):
 
         self.view.DisableExportMenus()
         self.view.DisableProcess()
+        self.view.DisablePlotMenu()
 
     def ShowDatasetConfigDialog(self):
         print('DEBUG - ShowDatasetConfigDialog')
@@ -114,7 +115,6 @@ class Presenter(object):
             return dialect.delimiter
 
     def _ShowDatasetAsTable(self):
-        self.view.ResetGrid()
         self.view.ShowDataset(self.model.dataset, self.model.datasetColsNames)
 
     def ShowExportImageDialog(self):
@@ -123,73 +123,51 @@ class Presenter(object):
     def ShowExportCsvDialog(self):
         print('DEBUG - ShowExportCsvDialog')
 
+    def SetMaxRange(self, maxRange):
+        print('DEBUG - Seteando rango')
+        self.view.AdjustProgressRange(maxRange)
+
+    def UpdateProgress(self, taskProgress):
+        print('DEBUG - Update progress')
+        self.view.UpdateProgress(taskProgress)
+
+    def FinishProgress(self):
+        print('DEBUG - Terminar')
+        self.view.DestroyProgressDialog()
+
     def Process(self):
         self.result = Results()
 
-        self.listener = ProgressListener(self.view)
+        threadProcess = threading.Thread(name="Clustering", target=self._ProcessThread)
+        threadProcess.start()
 
+        self.view.ShowProgressDialog()
 
+        threadProcess.join()
+        print('DEBUG - Thread process detenido')
 
-        e = threading.Event()
-
-        threads = []
-
-        threadProcess = threading.Thread(name="Clustering", target=self._ProcessThread, args=(e, self.listener))
-        # threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread, args=(e,))
-
-        # threadProgress.setDaemon(True)
-        # threadProcess.setDaemon(True)
-        # threadPlotter.setDaemon(True)
-
-        # threads.append(threadProgress)
-        threads.append(threadProcess)
-        # threads.append(threadPlotter)
-
-        for k, v in enumerate(threads):
-            print('DEBUG - Iniciando thread: %d' % k)
-            v.start()
-
-        self.listener.Start()
-
-        # for k, v in enumerate(threads):
-        #     v.join()
-        #     print('DEBUG - Thread %d detenido.' % k)
-
-        # threadProgress.start()
-        # threadProcess.start()
-        # threadPlotter.start()
-
-        # threadProgress.join()
-        # threadProcess.join()
-        # threadPlotter.join()
-
-    def _ProgressThread(self):
-        self.listener.Start()
-
-    def _ProcessThread(self, event, listener):
-        # self.listener = ProgressListener(self.view)
-        # threadProgress.start()
+    def _ProcessThread(self):
+        time.sleep(0.2)
 
         processor = Genetic({'n_clusters': 3})
 
-        processor.SetListener(listener)
+        processor.SetListener(self)
         processor.Fit(self.model.dataset)
 
         self.result.labels = processor.GetLabels()
         self.result.centroids = processor.GetCentroids()
 
-        self.view.ShowDataset(self.model.dataset, self.model.datasetColsNames, self.result.labels)
+        wx.CallAfter(self.view.ShowDataset, self.model.dataset, self.model.datasetColsNames, self.result.labels)
+        wx.CallAfter(self.view.EnableExportMenus)
+        wx.CallAfter(self.view.EnablePlotMenu)
+        wx.CallAfter(self.FinishProgress)
 
-        self.view.EnableExportMenus()
+    def Plot(self):
+        print('DEBUG - Plot')
+        threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
+        threadPlotter.start()
 
-        print("Event set!")
-
-        wx.CallAfter(self.listener.Finish)
-        event.set()
-
-    def _PlotThread(self, event):
-        event.wait()
-
+    def _PlotThread(self):
         plotter = Plotter()
 
         plotter.PlotSamples2D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=3)
