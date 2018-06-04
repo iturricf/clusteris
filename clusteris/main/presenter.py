@@ -67,6 +67,11 @@ class Presenter(object):
 
     def SetAlgorithm(self, index, name):
         print("DEBUG - Selected index: %d; value: %s" % (index, name))
+        if(index == 1):
+            self.view.HideGeneticParameters()
+        else:
+            if(index == 2):
+                self.view.ShowGeneticParameters()
         self.clusteringAlgorithm = index
 
     def SetCentroidParam(self, value):
@@ -233,7 +238,8 @@ class Presenter(object):
             self.SetAlgorithm(0, "Graphic")
         else:
             if self.clusteringAlgorithm == 0:
-                return
+                self.view.ShowErrorMessage("Debes seleccionar el algoritmo.")
+                return False
 
         className = self.params.CLUSTERING_PROCESSORS[self.clusteringAlgorithm]
 

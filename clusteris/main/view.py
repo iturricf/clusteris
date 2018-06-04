@@ -134,26 +134,26 @@ class MainView (wx.Frame):
 
     def BuildProcessUI(self, container):
         """Builds cluster processing parameters UI."""
-        sbSizerProcess = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Procesamiento"), wx.VERTICAL)
+        self.sbSizerProcess = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Procesamiento"), wx.VERTICAL)
 
         bSizerAlgorithm = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.labelAlgorithm = wx.StaticText(sbSizerProcess.GetStaticBox(), wx.ID_ANY, u"Algoritmo", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.labelAlgorithm = wx.StaticText(self.sbSizerProcess.GetStaticBox(), wx.ID_ANY, u"Algoritmo", wx.DefaultPosition, wx.DefaultSize, 0)
         self.labelAlgorithm.Wrap(-1)
         bSizerAlgorithm.Add(self.labelAlgorithm, 1, wx.ALL|wx.EXPAND, 10)
 
-        self.choiceAlgorithm = wx.Choice(sbSizerProcess.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, [], 0)
+        self.choiceAlgorithm = wx.Choice(self.sbSizerProcess.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, [], 0)
         bSizerAlgorithm.Add(self.choiceAlgorithm, 1, wx.ALL, 5)
 
-        sbSizerProcess.Add(bSizerAlgorithm, 1, wx.ALL|wx.EXPAND, 0)
+        self.sbSizerProcess.Add(bSizerAlgorithm, 1, wx.ALL|wx.EXPAND, 0)
 
-        self.BuildParamsUI(sbSizerProcess)
+        self.BuildParamsUI(self.sbSizerProcess)
 
-        self.BuildPopulationUI(sbSizerProcess)
+        self.BuildPopulationUI(self.sbSizerProcess)
 
-        self.BuildIterationUI(sbSizerProcess)
+        self.BuildIterationUI(self.sbSizerProcess)
 
-        container.Add(sbSizerProcess, 1, wx.ALL|wx.EXPAND, 5)
+        container.Add(self.sbSizerProcess, 1, wx.ALL|wx.EXPAND, 5)
 
     def BuildActionUI(self, container):
         """The action button UI. Start processing the dataset."""
@@ -278,11 +278,26 @@ class MainView (wx.Frame):
     def SetIterationSpinValue(self, value):
         self.spinIterationParam.SetValue(value)
 
+    def HideGeneticParameters(self):
+        self.spinIterationParam.Disable()
+        self.spinPopulationParam.Disable()
+        self.labelPopulation.Disable()
+        self.labelIteration.Disable()
+
+    def ShowGeneticParameters(self):
+        self.spinIterationParam.Enable()
+        self.spinPopulationParam.Enable()
+        self.labelPopulation.Enable()
+        self.labelIteration.Enable()
+
     def SetAlgorithmList(self, value):
         self.choiceAlgorithm.SetItems(value)
 
     def SetAlgorithmSelection(self, value):
         self.choiceAlgorithm.SetSelection(value)
+
+    def getAlgorithmSelection(self):
+        return self.choiceAlgorithm.GetSelection()
 
     def DisableProcessButton(self):
         self.buttonProcess.Disable()

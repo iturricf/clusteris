@@ -55,9 +55,6 @@ class Interactor(object):
     def OnZAxeSelected(self, evt):
         self.presenter.SetSelectedAxe(2, evt.GetSelection())
 
-    def OnProcessClicked(self, evt):
-        self.presenter.Process()
-
     def OnPopulationSpinCtrl(self, evt):
         self.presenter.SetPopulationParam(evt.GetPosition())
 
@@ -65,6 +62,7 @@ class Interactor(object):
         self.presenter.SetIterationParam(evt.GetPosition())
 
     def OnProcessClicked(self, evt):
+        self.presenter.SetAlgorithm(self.view.getAlgorithmSelection(), "algorithm")
         self.presenter.Process(False)
 
     def OnGraphicClicked(self, evt):
