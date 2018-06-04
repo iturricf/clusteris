@@ -7,6 +7,7 @@ from timer import Timer
 
 import numpy as np
 from sklearn.metrics import calinski_harabaz_score
+import wx
 
 class Genetic(object):
     INITIAL_POPULATION = 20 # Cantidad de individuos en la población inicial
@@ -32,8 +33,7 @@ class Genetic(object):
         """ Calcula la mejor distribución de los puntos del dataset, según los parámetros elegidos."""
         t = Timer()
 
-        # self.listener.Start()
-        self.listener.SetMaxRange(self.MAX_ITERATIONS)
+        wx.CallAfter(self.listener.SetMaxRange, self.MAX_ITERATIONS)
 
         t.AddTime("Start")
         self.dataset = dataset
@@ -131,7 +131,7 @@ class Genetic(object):
 
             t.AddTime("Iteration %d" % it)
 
-            self.listener.Update(it)
+            wx.CallAfter(self.listener.UpdateProgress, it)
 
         # 7. Ultima condición de parada, fin de las iteraciones
         # Si no encontré una solución antes, uso la mejor despues del proceso
@@ -144,7 +144,6 @@ class Genetic(object):
         t.PrintTimes()
 
         print('DEBUG - Fitness: %s' % self.fitness[minFit])
-        # self.listener.Finish()
 
     def GetCentroids(self):
         """ Devuelve los centroides calculados."""
