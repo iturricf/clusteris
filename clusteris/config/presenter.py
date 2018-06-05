@@ -46,7 +46,6 @@ class Presenter(object):
         self.view.SetParseFeaturesCheckbox(self.params.DATASET_PARSE_FEATURES_DEFAULT_VALUE)
         self.view.SetLabelSamplesCountText('Cantidad de muestras: N/A')
         self.view.SetLabelFeaturesCountText('Cantidad de atributos: N/A')
-        self.view.SetStatusBarText('Archivo dataset: No seleccionado.')
         self.view.SetCentroidSpinRange(self.params.CENTROID_MIN_VALUE, self.params.CENTROID_MAX_VALUE)
         self.view.SetCentroidSpinValue(self.params.CENTROID_DEFAULT_VALUE)
         self.view.SetLabelPopulationText("Cantidad de individuos [" + str(self.params.POPULATION_MIN_VALUE) + " - " + str(self.params.POPULATION_MAX_VALUE) + "]")
@@ -121,7 +120,6 @@ class Presenter(object):
 
             self.view.SetLabelSamplesCountText('Cantidad de muestras: %d' % self.datasetSamplesCount)
             self.view.SetLabelFeaturesCountText('Cantidad de atributos: %d' % self.datasetFeaturesCount)
-            self.view.SetStatusText('Archivo dataset: %s' % self.datasetPath)
 
             self.view.EnableProcessButton()
 

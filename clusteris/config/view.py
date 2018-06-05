@@ -65,9 +65,6 @@ class MainView (wx.Frame):
         self.SetSizer(self.sizerMain)
         self.Layout()
 
-        # Add status bar
-        self.statusBar = self.CreateStatusBar(1, wx.STB_SIZEGRIP, wx.ID_ANY)
-
     def BuildPlotterOptionsUI(self, container):
         """Builds the plotter parameters UI."""
         sbSizerPlotter = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Graficador"), wx.VERTICAL)
@@ -208,7 +205,7 @@ class MainView (wx.Frame):
         self.buttonProcess = wx.Button(self.panelAction, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
         bSizerAction.Add(self.buttonProcess, 0, wx.ALIGN_CENTER, 5)
 
-        container.Add(bSizerAction, 0, wx.ALIGN_CENTER, 0)
+        container.Add(bSizerAction, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
     def BuildFileSelectionUI(self, container):
         """Dataset file select."""
@@ -293,9 +290,6 @@ class MainView (wx.Frame):
 
     def SetLabelFeaturesCountText(self, value):
         self.labelFeaturesCount.SetLabel(value)
-
-    def SetStatusBarText(self, value):
-        self.statusBar.SetStatusText(value)
 
     def SetCentroidSpinRange(self, min, max):
         self.spinCentroidsParam.SetRange(min, max)
