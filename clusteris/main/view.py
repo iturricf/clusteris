@@ -15,6 +15,7 @@ class MainView (wx.Frame):
 
     # Custom Events for dataset file selection
     FileSelectedEvent, EVT_FILE_SELECTED = wx.lib.newevent.NewEvent()
+    ExportCsvFileSelectedEvent, EVT_EXPORT_CSV_FILE_SELECTED = wx.lib.newevent.NewEvent()
 
     def __init__(self, parent):
         """Constructor. Initializes the wxPython app and Builds main UI."""
@@ -194,9 +195,9 @@ class MainView (wx.Frame):
                    "Comma separated values files (*.csv)|*.csv|" \
                    "All files (*.*)|*.*"
 
-        with  wx.FileDialog(
+        with wx.FileDialog(
             self,
-            message='Please select a dataset file...',
+            message='Por favor seleccione un archivo de datos...',
             wildcard=wildcard,
             defaultDir="../samples",
             style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR|
@@ -209,6 +210,28 @@ class MainView (wx.Frame):
 
             # Notify FileDialog custom FileSelectedEvent with corresponding path
             wx.PostEvent(self, self.FileSelectedEvent(path=fileDialog.GetPath()))
+
+    def ShowSaveCsvFileDialog(self, filename):
+
+        wildcard = "Text files (*.txt)|*.txt|" \
+                   "Comma separated values files (*.csv)|*.csv|" \
+                   "All files (*.*)|*.*"
+
+        with wx.FileDialog(
+            self,
+            message='Guardar resultado CSV',
+            wildcard=wildcard,
+            defaultDir="../samples",
+            style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT
+        ) as fileDialog:
+
+            fileDialog.SetFilename(filename)
+
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                print('DEBUG - Cancelado')
+                return
+
+            wx.PostEvent(self, self.ExportCsvFileSelectedEvent(path=fileDialog.GetPath()))
 
     def ShowErrorMessage(self, message):
         wx.LogError(message)

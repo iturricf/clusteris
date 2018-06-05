@@ -5,6 +5,8 @@ import importlib
 import threading
 import time
 
+from os.path import basename, splitext
+
 import numpy as np
 import pandas as pd
 import wx
@@ -113,6 +115,8 @@ class Presenter(object):
 
     def ShowExportCsvDialog(self):
         print('DEBUG - ShowExportCsvDialog')
+        exportFilename, extension = splitext(basename(self.model.datasetPath))
+        self.view.ShowSaveCsvFileDialog("%s-result%s" %(exportFilename, extension))
 
     def ShowDatasetConfigDialog(self):
         print('DEBUG - ShowDatasetConfigDialog')
@@ -204,6 +208,17 @@ class Presenter(object):
                 plotter.PlotCentroids3D(self.result.centroids, axes=self.model.colsForAxes)
 
         plotter.Show()
+
+    def ExportCsvFile(self, path):
+        print('DEBUG - Export CSV to: %s' % path)
+
+        rows = self.result.labels.shape
+
+        reshaped = self.result.labels.reshape(rows[0], 1)
+
+        toExport = np.append(self.model.dataset, reshaped, axis=1)
+        df = pd.DataFrame(toExport)
+        df.to_csv(path, header=None, index=None, sep=" ")
 
     def Close(self):
         print('DEBUG - Exiting program...')
