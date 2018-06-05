@@ -48,9 +48,19 @@ class MainView (wx.Frame):
         self.panelMain.SetSizer(bSizerPanel)
         self.panelMain.Layout()
         bSizerPanel.Fit(self.panelMain)
-        self.sizerMain.Add(self.panelMain, 1, wx.ALL|wx.EXPAND, 0)
 
-        self.BuildActionUI(self.sizerMain)
+        self.sizerMain.Add(self.panelMain, 0, wx.ALL|wx.EXPAND, 0)
+
+        self.panelAction = wx.Panel(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
+        bSizerActionContainer = wx.BoxSizer(wx.VERTICAL)
+
+        self.BuildActionUI(bSizerActionContainer)
+
+        self.panelAction.SetSizer(bSizerActionContainer)
+        self.panelAction.Layout()
+        bSizerActionContainer.Fit(self.panelAction)
+
+        self.sizerMain.Add(self.panelAction, 0, wx.ALL|wx.EXPAND, 0)
 
         self.SetSizer(self.sizerMain)
         self.Layout()
@@ -191,14 +201,14 @@ class MainView (wx.Frame):
     def BuildActionUI(self, container):
         """The action button UI. Start processing the dataset."""
         bSizerAction = wx.BoxSizer(wx.HORIZONTAL)
-        
-        self.buttonGraphic = wx.Button(self, wx.ID_ANY, u"Graficar", wx.DefaultPosition, wx.DefaultSize, 0)
-        bSizerAction.Add(self.buttonGraphic, 0, wx.CENTER|wx.ALL, 5)
 
-        self.buttonProcess = wx.Button(self, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
-        bSizerAction.Add(self.buttonProcess, 0, wx.CENTER|wx.ALL, 5)
+        self.buttonGraphic = wx.Button(self.panelAction, wx.ID_ANY, u"Graficar", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerAction.Add(self.buttonGraphic, 0, wx.ALIGN_CENTER, 5)
 
-        container.Add(bSizerAction, 0, wx.CENTER, 0)
+        self.buttonProcess = wx.Button(self.panelAction, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerAction.Add(self.buttonProcess, 0, wx.ALIGN_CENTER, 5)
+
+        container.Add(bSizerAction, 0, wx.ALIGN_CENTER, 0)
 
     def BuildFileSelectionUI(self, container):
         """Dataset file select."""
@@ -248,7 +258,7 @@ class MainView (wx.Frame):
         bSizerParamK.Add(self.spinCentroidsParam, 1, wx.ALL, 5)
 
         container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
-    
+
     def BuildPopulationUI(self, container):
         """Processing params."""
         bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
@@ -261,7 +271,7 @@ class MainView (wx.Frame):
         bSizerParamK.Add(self.spinPopulationParam, 1, wx.ALL, 5)
 
         container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
-    
+
     def BuildIterationUI(self, container):
         """Processing params."""
         bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
@@ -330,10 +340,10 @@ class MainView (wx.Frame):
     def ShowVarClassesParameter(self):
         self.spinVarClassParamFrom.Enable()
         self.spinVarClassParamTo.Enable()
-    
+
     def HideFixedClassesParameter(self):
         self.spinFixedClassParam.Disable()
-    
+
     def ShowFixedClassesParameter(self):
         self.spinFixedClassParam.Enable()
 
