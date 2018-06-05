@@ -2,9 +2,9 @@
 
 import wx
 
-class MainView (wx.Frame):
+class ConfigView(wx.Dialog):
     """
-    MainView is the main UI responsible. Shows dataset, processor and params
+    ConfigView is the config UI responsible. Shows dataset, processor and params
     related info.
 
     Provides public methods for asigning UI values from Presenter and dispatches
@@ -18,7 +18,7 @@ class MainView (wx.Frame):
         self.BuildMainUI(parent)
 
     def BuildMainUI(self, parent):
-        wx.Frame.__init__(self, parent, id = wx.ID_ANY, title = u"ClusteRIS", pos = wx.DefaultPosition, size = wx.Size(-1,-1), style = wx.CAPTION|wx.CLOSE_BOX|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL)
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = u"Dataset configuration", pos = wx.DefaultPosition, size = wx.Size(-1,-1), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL)
 
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 
@@ -281,9 +281,6 @@ class MainView (wx.Frame):
 
     def SetAlgorithmSelection(self, value):
         self.choiceAlgorithm.SetSelection(value)
-
-    def getAlgorithmSelection(self):
-        return self.choiceAlgorithm.GetSelection()
 
     def DisableProcessButton(self):
         self.buttonProcess.Disable()
