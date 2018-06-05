@@ -225,7 +225,7 @@ class MainView (wx.Frame):
         self.progress.Update(progress)
 
     def DestroyProgressDialog(self):
-        self.progress.EndModal(True)
+        self.progress.Destroy()
 
     def Start(self):
         """ Initializes the main loop for this UI. Starts listening events."""
