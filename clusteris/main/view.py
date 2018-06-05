@@ -22,7 +22,7 @@ class MainView (wx.Frame):
         self.BuildMainUI(parent)
 
     def BuildMainUI(self, parent):
-        wx.Frame.__init__(self, parent, id = wx.ID_ANY, title = u"ClusteRIS", pos = wx.DefaultPosition, size = wx.Size(-1,-1), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL)
+        wx.Frame.__init__(self, parent, id = wx.ID_ANY, title = u"ClusteRIS", pos = wx.DefaultPosition, size = wx.Size(-1,-1), style = wx.CAPTION|wx.CLOSE_BOX|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL)
 
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 
@@ -35,6 +35,7 @@ class MainView (wx.Frame):
 
         self.BuildDatasetUI(bSizerLeft)
         self.BuildProcessUI(bSizerLeft)
+        self.BuildClassesUI(bSizerLeft)
 
         bSizerPanel.Add(bSizerLeft, 1, wx.ALL, 1)
 
@@ -154,6 +155,38 @@ class MainView (wx.Frame):
         self.BuildIterationUI(self.sbSizerProcess)
 
         container.Add(self.sbSizerProcess, 1, wx.ALL|wx.EXPAND, 5)
+
+    def BuildClassesUI(self, container):
+        """Builds cluster processing parameters UI."""
+        self.sbSizerClasses = wx.StaticBoxSizer(wx.StaticBox(self.panelMain, wx.ID_ANY, u"Número de Clases"), wx.VERTICAL)
+
+        bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.radioFixedClassParam = wx.RadioButton(self.sbSizerClasses.GetStaticBox(), wx.ID_ANY, u"Fijo", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.radioFixedClassParam.SetValue(1)
+        bSizerParamK.Add(self.radioFixedClassParam, 1, wx.ALL, 10)
+
+        self.spinFixedClassParam = wx.SpinCtrl(self.sbSizerClasses.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
+        bSizerParamK.Add(self.spinFixedClassParam, 1, wx.ALL, 5)
+
+        bSizerParamVarK = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.radioVarClassParam = wx.RadioButton(self.sbSizerClasses.GetStaticBox(), wx.ID_ANY, u"Optimizado desde", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerParamVarK.Add(self.radioVarClassParam, 1, wx.ALL, 10)
+
+        self.spinVarClassParamFrom = wx.SpinCtrl(self.sbSizerClasses.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
+        bSizerParamVarK.Add(self.spinVarClassParamFrom, 1, wx.ALL, 5)
+
+        self.labelVarClassTo = wx.StaticText(self.sbSizerClasses.GetStaticBox(), wx.ID_ANY, u"hasta", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerParamVarK.Add(self.labelVarClassTo, 0, wx.ALL, 10)
+
+        self.spinVarClassParamTo = wx.SpinCtrl(self.sbSizerClasses.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
+        bSizerParamVarK.Add(self.spinVarClassParamTo, 1, wx.ALL, 5)
+
+        self.sbSizerClasses.Add(bSizerParamK, 0, wx.ALL|wx.EXPAND, 0)
+        self.sbSizerClasses.Add(bSizerParamVarK, 0, wx.ALL|wx.EXPAND, 0)
+
+        container.Add(self.sbSizerClasses, 0, wx.ALL|wx.EXPAND, 5)
 
     def BuildActionUI(self, container):
         """The action button UI. Start processing the dataset."""
@@ -289,6 +322,20 @@ class MainView (wx.Frame):
         self.spinPopulationParam.Enable()
         self.labelPopulation.Enable()
         self.labelIteration.Enable()
+
+    def HideVarClassesParameter(self):
+        self.spinVarClassParamFrom.Disable()
+        self.spinVarClassParamTo.Disable()
+
+    def ShowVarClassesParameter(self):
+        self.spinVarClassParamFrom.Enable()
+        self.spinVarClassParamTo.Enable()
+    
+    def HideFixedClassesParameter(self):
+        self.spinFixedClassParam.Disable()
+    
+    def ShowFixedClassesParameter(self):
+        self.spinFixedClassParam.Enable()
 
     def SetAlgorithmList(self, value):
         self.choiceAlgorithm.SetItems(value)

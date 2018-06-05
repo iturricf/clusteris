@@ -22,6 +22,8 @@ class Interactor(object):
         view.choiceZAxe.Bind(wx.EVT_CHOICE, self.OnZAxeSelected)
         view.spinPopulationParam.Bind(wx.EVT_SPINCTRL, self.OnPopulationSpinCtrl)
         view.spinIterationParam.Bind(wx.EVT_SPINCTRL, self.OnIterationsSpinCtrl)
+        view.radioFixedClassParam.Bind(wx.EVT_RADIOBUTTON, self.OnRadioFixedClassParamClicked)
+        view.radioVarClassParam.Bind(wx.EVT_RADIOBUTTON, self.OnRadioVarClassParamClicked)
         view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
         view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
 
@@ -60,6 +62,12 @@ class Interactor(object):
 
     def OnIterationsSpinCtrl(self, evt):
         self.presenter.SetIterationParam(evt.GetPosition())
+
+    def OnRadioFixedClassParamClicked(self, evt):
+        self.presenter.RadioFixedClassParamClicked(evt.IsChecked())
+
+    def OnRadioVarClassParamClicked(self, evt):
+        self.presenter.RadioVarClassParamClicked(evt.IsChecked())
 
     def OnProcessClicked(self, evt):
         self.presenter.SetAlgorithm(self.view.getAlgorithmSelection(), "algorithm")

@@ -184,6 +184,14 @@ class Presenter(object):
         self.columnsForAxes[axe] = value
         print("Axes:: %s" % self.columnsForAxes)
 
+    def RadioFixedClassParamClicked(self, value):
+        self.view.HideVarClassesParameter()
+        self.view.ShowFixedClassesParameter()
+
+    def RadioVarClassParamClicked(self, value):
+        self.view.HideFixedClassesParameter()
+        self.view.ShowVarClassesParameter()
+
     def _DisablePlotterOptions(self):
         self.view.Disable2DRadio()
         self.view.Disable3DRadio()
