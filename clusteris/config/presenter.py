@@ -7,11 +7,11 @@ class Presenter(object):
     Process UI events and updates view with results.
     """
 
-    def __init__(self, view, interactor, params):
+    def __init__(self, view, interactor, model, params):
         self.view = view
         self.interactor = interactor
         self.params = params
-
+        self.model = model
         self.localModel = deepcopy(self.model)
 
         interactor.Connect(self, view)
