@@ -8,6 +8,9 @@ class KMeans(object):
         self.NClusters = params['n_clusters']
         self.kmeans = K(self.NClusters)
 
+    def SetListener(self, listener):
+        pass
+
     def Fit(self, dataset):
         self.dataset = dataset
 

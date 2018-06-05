@@ -12,9 +12,9 @@ import numpy as np
 class Plotter(object):
 
     def __init__(self):
-        plt.rcParams['figure.figsize'] = (16, 9)
+        plt.rcParams['figure.figsize'] = (12, 6)
         plt.rcParams['axes.unicode_minus'] = False
-        plt.rcParams['toolbar'] = 'None'
+        # plt.rcParams['toolbar'] = 'None'
         plt.style.use('ggplot')
 
         self.pointsMarkers = ['o', 's', '^', 'v', '<', '>', '8', 'x', '+', 'p']
@@ -73,11 +73,19 @@ class Plotter(object):
     def Show(self):
         manager = plt.get_current_fig_manager()
 
+        manager.window.wm_title("Clasificación")
+
         # From https://stackoverflow.com/a/22418354
-        if (platform.system() == 'Linux'):
-            manager.resize(*manager.window.maxsize())
-        else:
-            manager.window.state('zoomed')
+        # if (platform.system() == 'Linux'):
+        #     manager.resize(*manager.window.maxsize())
+        # else:
+        #     manager.window.state('zoomed')
+        g = manager.window.geometry()
+
 
         plt.legend()
         plt.show()
+
+
+
+        print("Width: %s" % g)

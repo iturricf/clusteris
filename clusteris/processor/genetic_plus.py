@@ -7,6 +7,7 @@ from timer import Timer
 
 import numpy as np
 from sklearn.metrics import calinski_harabaz_score
+import wx
 
 class Genetic(object):
     INITIAL_POPULATION = 20 # Cantidad de individuos en la población inicial
@@ -24,22 +25,32 @@ class Genetic(object):
     def __init__(self, params):
         """ Se inicializan los parametros del procesador genético."""
         self.NClusters = params['n_clusters']
+        self.NPopulation = params['n_population']
+        self.NIterations = params['n_iterations']
 
-    def Fit(self, dataset, nPopulation, nIterations):
+        print('DEBUG - INIt Gen: Npop: %s' % self.NPopulation)
+        print('DEBUG - INIt Gen: Nit: %s' % self.NIterations)
+
+    def SetListener(self, listener):
+        self.listener = listener
+
+    def Fit(self, dataset):
         """ Calcula la mejor distribución de los puntos del dataset, según los parámetros elegidos."""
         t = Timer()
+
+        wx.CallAfter(self.listener.SetMaxRange, self.NIterations)
 
         t.AddTime("Start")
         self.dataset = dataset
         self.datasetLen, self.datasetDimension = list(dataset.shape)
 
-        self.population = self._GetInitialPop(nPopulation) # 1. Generación de población inicial
+        self.population = self._GetInitialPop() # 1. Generación de población inicial
 
         t.AddTime("Initial pop")
 
         self.bestIndividual = None
 
-        for it in range(nIterations):
+        for it in range(self.NIterations):
             self.fitness = [i.Fitness() for i in self.population] # 2. Calculo de aptitud de la población
 
             minFit = np.argmax(self.fitness)
@@ -125,6 +136,8 @@ class Genetic(object):
 
             t.AddTime("Iteration %d" % it)
 
+            wx.CallAfter(self.listener.UpdateProgress, it)
+
         # 7. Ultima condición de parada, fin de las iteraciones
         # Si no encontré una solución antes, uso la mejor despues del proceso
         if self.bestIndividual is None:
@@ -161,7 +174,6 @@ class Genetic(object):
                 break
 
         print('DEBUG - Actual mutations: %s' % len(toMutate))
-
         for i in toMutate:
             i.Mutate()
 
@@ -206,10 +218,10 @@ class Genetic(object):
         """ Selección elitista del mejor individuo."""
         return self.population[np.argmax(self.fitness)]
 
-    def _GetInitialPop(self, nPopulation):
+    def _GetInitialPop(self):
         """ Generación de población inicial aleatoria basada en puntos existentes."""
         population = []
-        for i in range(nPopulation):
+        for i in range(self.NPopulation):
             tempDataset = self.dataset
 
             individual = []

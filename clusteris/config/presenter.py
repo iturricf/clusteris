@@ -1,44 +1,31 @@
 # -*- coding: utf-8 -*-
 
-import importlib
-
-import numpy as np
-import pandas as pd
-
-import processor.genetic
-from plotter import Plotter
-from processor.dummy import Dummy
-from processor.kmeans import KMeans
-from processor.genetic_plus import Genetic
+from copy import deepcopy
 
 class Presenter(object):
     """
     Process UI events and updates view with results.
     """
 
-    def __init__(self, view, interactor, params):
+    def __init__(self, view, interactor, model, params):
         self.view = view
         self.interactor = interactor
         self.params = params
+        self.model = model
+        self.localModel = deepcopy(self.model)
 
         interactor.Connect(self, view)
 
         self.InitModel()
         self.InitView()
 
-        view.Start()
-
     def InitModel(self):
-        self.dataset = None
-        self.datasetPath = ""
-        self.parseAttributes = False
-        self.datasetSamplesCount = 0
-        self.datasetFeaturesCount = 0
-        self.clusteringAlgorithm = self.params.CLUSTERING_ALGORITHM_DEFAULT
-        self.centroidsNumber = self.params.CENTROID_DEFAULT_VALUE
-        self.populationNumber = self.params.POPULATION_DEFAULT_VALUE
-        self.iterationsNumber = self.params.ITERATION_DEFAULT_VALUE
-        self.samples = []
+        print('DEBUG - INIT presenter')
+
+        self.localModel.clusteringAlgorithm = self.params.CLUSTERING_ALGORITHM_DEFAULT
+        self.localModel.clusters = self.params.CENTROID_DEFAULT_VALUE
+        self.localModel.maxPopulation = self.params.POPULATION_DEFAULT_VALUE
+        self.localModel.maxIterations = self.params.ITERATION_DEFAULT_VALUE
 
     def InitView(self):
         """Sets default values for the UI."""
@@ -52,19 +39,16 @@ class Presenter(object):
         self.view.SetIterationSpinValue(self.params.ITERATION_DEFAULT_VALUE)
         self.view.SetAlgorithmList(self.params.CLUSTERING_ALGORITHMS)
         self.view.SetAlgorithmSelection(self.params.CLUSTERING_ALGORITHM_DEFAULT)
+        self.view.HideGeneticParameters()
 
         self._DisablePlotterOptions()
 
-        # self.view.DisableProcessButton()
-
-        self.columnsForAxes = range(3)
-
-        if (self.datasetFeaturesCount == 2):
+        if (self.localModel.datasetCols == 2):
             self.view.Enable2DRadio()
 
             self.Radio2DClicked(True)
 
-        if (self.datasetFeaturesCount >= 3):
+        if (self.localModel.datasetCols >= 3):
             self.view.Enable2DRadio()
             self.view.Enable3DRadio()
             self.view.Set3DSelected()
@@ -78,25 +62,25 @@ class Presenter(object):
         else:
             if(index == 2):
                 self.view.ShowGeneticParameters()
-        self.clusteringAlgorithm = index
+        self.localModel.clusteringAlgorithm = index
 
     def SetCentroidParam(self, value):
         print("DEBUG - Selected value: %d" % value)
-        self.centroidsNumber = value
+        self.localModel.clusters = value
 
     def SetPopulationParam(self, value):
         print("DEBUG - Population value: %d" % value)
-        self.populationNumber = value
+        self.localModel.maxPopulation = value
 
     def SetIterationParam(self, value):
         print("DEBUG - Iteration value: %d" % value)
-        self.iterationsNumber = value
+        self.localModel.maxIterations = value
 
     def Radio2DClicked(self, value):
         print('DEBUG - Plotter 2D: %s' % value)
         if value:
-            self.axesAvailable = 2
-            self._SetAllAxesList(self.columnNames)
+            self.localModel.selectedAxes = 2
+            self._SetAllAxesList(self.localModel.datasetColsNames)
             self.view.SetZAxeList([])
             self.view.DisableZAxeChoice()
 
@@ -105,15 +89,15 @@ class Presenter(object):
             self.view.SetYAxeSelection(1)
             self.SetSelectedAxe(1, 1)
 
-            if (self.datasetFeaturesCount > 2):
+            if (self.localModel.datasetCols > 2):
                 self.view.EnableXAxeChoice()
                 self.view.EnableYAxeChoice()
 
     def Radio3DClicked(self, value):
         print('DEBUG - Plotter 3D: %s' % value)
         if value:
-            self.axesAvailable = 3
-            self._SetAllAxesList(self.columnNames)
+            self.localModel.selectedAxes = 3
+            self._SetAllAxesList(self.localModel.datasetColsNames)
 
             self._DisableAllLists()
 
@@ -124,15 +108,15 @@ class Presenter(object):
             self.view.SetZAxeSelection(2)
             self.SetSelectedAxe(2, 2)
 
-            if (self.datasetFeaturesCount > 3):
+            if (self.localModel.datasetCols > 3):
                 self.view.EnableXAxeChoice()
                 self.view.EnableYAxeChoice()
                 self.view.EnableZAxeChoice()
 
     def SetSelectedAxe(self, axe, value):
         print('DEBUG - Selected axe value: %d - %d' % (axe, value))
-        self.columnsForAxes[axe] = value
-        print("Axes:: %s" % self.columnsForAxes)
+        self.localModel.colsForAxes[axe] = value
+        print("Axes:: %s" % self.localModel.colsForAxes)
 
     def RadioFixedClassParamClicked(self, value):
         self.view.HideVarClassesParameter()
@@ -149,9 +133,9 @@ class Presenter(object):
         self._DisableAllLists()
 
     def _SetAllAxesList(self, value):
-        self.view.SetXAxeList(self.columnNames)
-        self.view.SetYAxeList(self.columnNames)
-        self.view.SetZAxeList(self.columnNames)
+        self.view.SetXAxeList(self.localModel.datasetColsNames)
+        self.view.SetYAxeList(self.localModel.datasetColsNames)
+        self.view.SetZAxeList(self.localModel.datasetColsNames)
 
     def _DisableAllLists(self):
         self.view.DisableXAxeChoice()
@@ -159,70 +143,25 @@ class Presenter(object):
         self.view.DisableZAxeChoice()
 
     def _IsPlotterConfigValid(self):
-        for i in range(self.axesAvailable - 1):
-            if self.columnsForAxes[i] == self.columnsForAxes[i+1]:
+        for i in range(self.localModel.selectedAxes - 1):
+            if self.localModel.colsForAxes[i] == self.localModel.colsForAxes[i+1]:
                 return False
 
         return True
 
-    def Process(self, graphic):
-        if self.dataset is None:
-            self.view.ShowErrorMessage("No se ha seleccionado el dataset aún.")
-            return False
+    def Cancel(self):
+        self.view.EndModal(False)
 
+    def Process(self):
         if not self._IsPlotterConfigValid():
             self.view.ShowErrorMessage("Las columnas para los ejes seleccionados debe ser distinta para cada uno.")
             return False
 
-        if graphic:
-            self.SetAlgorithm(0, "Graphic")
-        else:
-            if self.clusteringAlgorithm == 0:
-                self.view.ShowErrorMessage("Debes seleccionar el algoritmo.")
-                return False
+        # Copio los parametros modificados al modelo global
+        for k, v in self.localModel.__dict__.items():
+            setattr(self.model, k, v)
 
-        className = self.params.CLUSTERING_PROCESSORS[self.clusteringAlgorithm]
+        self.view.EndModal(True)
 
-        procModule = []
-
-        procModule.append(importlib.import_module('processor.dummy'))
-        procModule.append(importlib.import_module('processor.kmeans'))
-        procModule.append(importlib.import_module('processor.genetic_plus'))
-
-        procClass = getattr(procModule[self.clusteringAlgorithm], className)
-
-        processor = procClass({'n_clusters': self.centroidsNumber})
-        if self.clusteringAlgorithm == 0:
-            processor.Fit(Dataset)
-        else:
-            if self.clusteringAlgorithm == 1:
-                processor.Fit(Dataset)
-            if self.clusteringAlgorithm == 2:
-                processor.Fit(Dataset, self.populationNumber, self.iterationsNumber)
-
-        labels = processor.GetLabels()
-        centroids = processor.GetCentroids()
-
-        plotter = Plotter()
-
-        clusters = self.centroidsNumber
-
-        if (self.clusteringAlgorithm == 0):
-            clusters = 1
-
-        if (self.axesAvailable < 3):
-            clusters = self.centroidsNumber
-            if (self.clusteringAlgorithm == 0):
-                clusters = 1
-            plotter.PlotSamples2D(Dataset, axes=self.columnsForAxes, labels=labels, clusters=clusters)
-
-            if (len(centroids)):
-                plotter.PlotCentroids2D(centroids, axes=self.columnsForAxes)
-
-        else:
-            plotter.PlotSamples3D(Dataset, axes=self.columnsForAxes, labels=labels, clusters=clusters)
-
-            if (len(centroids)):
-                plotter.PlotCentroids3D(centroids, axes=self.columnsForAxes)
-
-        plotter.Show()
+    def Start(self):
+        return self.view.Start()
