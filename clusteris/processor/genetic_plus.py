@@ -25,6 +25,11 @@ class Genetic(object):
     def __init__(self, params):
         """ Se inicializan los parametros del procesador genético."""
         self.NClusters = params['n_clusters']
+        self.NPopulation = params['n_population']
+        self.NIterations = params['n_iterations']
+
+        print('DEBUG - INIt Gen: Npop: %s' % self.NPopulation)
+        print('DEBUG - INIt Gen: Nit: %s' % self.NIterations)
 
     def SetListener(self, listener):
         self.listener = listener
@@ -33,7 +38,7 @@ class Genetic(object):
         """ Calcula la mejor distribución de los puntos del dataset, según los parámetros elegidos."""
         t = Timer()
 
-        wx.CallAfter(self.listener.SetMaxRange, self.MAX_ITERATIONS)
+        wx.CallAfter(self.listener.SetMaxRange, self.NIterations)
 
         t.AddTime("Start")
         self.dataset = dataset
@@ -45,7 +50,7 @@ class Genetic(object):
 
         self.bestIndividual = None
 
-        for it in range(self.MAX_ITERATIONS):
+        for it in range(self.NIterations):
             self.fitness = [i.Fitness() for i in self.population] # 2. Calculo de aptitud de la población
 
             minFit = np.argmax(self.fitness)
@@ -216,7 +221,7 @@ class Genetic(object):
     def _GetInitialPop(self):
         """ Generación de población inicial aleatoria basada en puntos existentes."""
         population = []
-        for i in range(self.INITIAL_POPULATION):
+        for i in range(self.NPopulation):
             tempDataset = self.dataset
 
             individual = []

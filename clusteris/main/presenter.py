@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import csv
+import importlib
 import threading
 import time
 
@@ -14,8 +15,9 @@ from config.presenter import Presenter as ConfigPresenter
 
 from model import Results
 from plotter import Plotter
-from processor.genetic_plus import Genetic
-from processor.kmeans import KMeans
+# from processor.dummy import Dummy
+# from processor.genetic_plus import Genetic
+# from processor.kmeans import KMeans
 
 class Presenter(object):
     """
@@ -42,14 +44,6 @@ class Presenter(object):
         self.view.DisableProcess()
         self.view.DisablePlotMenu()
 
-    def ShowDatasetConfigDialog(self):
-        print('DEBUG - ShowDatasetConfigDialog')
-
-        view = ConfigView(self.view)
-        interactor = ConfigInteractor()
-        presenter = ConfigPresenter(view, interactor, self.model, self.params)
-
-        presenter.Start()
     def ShowFileDialog(self):
         self.view.ShowFileDialog()
 
@@ -89,6 +83,7 @@ class Presenter(object):
             self.view.EnableProcess()
 
             self.model.colsForAxes = range(3)
+            self.model.clusters = 1
 
             ## Dataset Processing
 
@@ -123,6 +118,22 @@ class Presenter(object):
     def ShowExportCsvDialog(self):
         print('DEBUG - ShowExportCsvDialog')
 
+    def ShowDatasetConfigDialog(self):
+        print('DEBUG - ShowDatasetConfigDialog')
+
+        print(self.model.datasetRows, self.model.datasetCols, self.model.selectedAxes)
+
+        view = ConfigView(self.view)
+        interactor = ConfigInteractor()
+        presenter = ConfigPresenter(view, interactor, self.model, self.params)
+
+        if (presenter.Start()):
+            print('DEBUG - Despues del dialogo')
+            print(self.model.datasetRows, self.model.datasetCols, self.model.selectedAxes)
+            self.Process()
+        else:
+            print('DEBUG - CANCELLED')
+
     def SetMaxRange(self, maxRange):
         print('DEBUG - Seteando rango')
         self.view.AdjustProgressRange(maxRange)
@@ -147,11 +158,25 @@ class Presenter(object):
         print('DEBUG - Thread process detenido')
 
     def _ProcessThread(self):
+        className = self.params.CLUSTERING_PROCESSORS[self.model.clusteringAlgorithm]
+
+        procModule = []
+
+        procModule.append(importlib.import_module('processor.dummy'))
+        procModule.append(importlib.import_module('processor.kmeans'))
+        procModule.append(importlib.import_module('processor.genetic_plus'))
+
+        procClass = getattr(procModule[self.model.clusteringAlgorithm], className)
+
+        processor = procClass({
+            'n_clusters': self.model.clusters,
+            'n_population': self.model.maxPopulation,
+            'n_iterations': self.model.maxIterations
+        })
+
         time.sleep(0.2)
-
-        processor = Genetic({'n_clusters': 3})
-
         processor.SetListener(self)
+
         processor.Fit(self.model.dataset)
 
         self.result.labels = processor.GetLabels()
@@ -166,12 +191,25 @@ class Presenter(object):
         print('DEBUG - Plot')
         threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
         threadPlotter.start()
+        threadProcess.join()
 
     def _PlotThread(self):
+        clusters = 1 if self.model.clusteringAlgorithm == 0 else self.model.clusters
+
+        print('DEBUG - Clusters a graficar: %d' % clusters)
         plotter = Plotter()
 
-        plotter.PlotSamples2D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=3)
-        plotter.PlotCentroids2D(self.result.centroids, axes=self.model.colsForAxes)
+        if (self.model.selectedAxes < 3):
+            plotter.PlotSamples2D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=clusters)
+
+            if (len(self.result.centroids)):
+                plotter.PlotCentroids2D(self.result.centroids, axes=self.model.colsForAxes)
+
+        else:
+            plotter.PlotSamples3D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=clusters)
+
+            if (len(self.result.centroids)):
+                plotter.PlotCentroids3D(self.result.centroids, axes=self.model.colsForAxes)
 
         plotter.Show()
 

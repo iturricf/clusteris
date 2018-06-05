@@ -23,7 +23,6 @@ class Interactor(object):
         view.Bind(wx.EVT_CLOSE, self.OnExitClicked)
 
         view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
-        # view.Bind(view.EVT_PLOTTER_ATTACHED, self.OnPlotterAttached)
 
     def OnOpenDatasetClicked(self, evt):
         self.presenter.ShowFileDialog()
@@ -38,8 +37,8 @@ class Interactor(object):
         self.presenter.SetSelectedFile(evt.path)
 
     def OnProcessDataset(self, evt):
-        # self.presenter.ShowDatasetConfigDialog()
-        self.presenter.Process()
+        self.presenter.ShowDatasetConfigDialog()
+        # self.presenter.Process()
 
     def OnPlotResults(self, evt):
         self.presenter.Plot()

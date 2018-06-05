@@ -10,7 +10,6 @@ class Interactor(object):
         self.presenter = presenter
         self.view = view
 
-        view.buttonGraphic.Bind(wx.EVT_BUTTON, self.OnGraphicClicked)
         view.choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
         view.spinCentroidsParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
         view.radioBtn2D.Bind(wx.EVT_RADIOBUTTON, self.OnRadioButton2DClicked)
@@ -22,7 +21,11 @@ class Interactor(object):
         view.spinIterationParam.Bind(wx.EVT_SPINCTRL, self.OnIterationsSpinCtrl)
         view.radioFixedClassParam.Bind(wx.EVT_RADIOBUTTON, self.OnRadioFixedClassParamClicked)
         view.radioVarClassParam.Bind(wx.EVT_RADIOBUTTON, self.OnRadioVarClassParamClicked)
+
+        view.buttonCancel.Bind(wx.EVT_BUTTON, self.OnCancelClicked)
         view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
+
+        view.Bind(wx.EVT_CLOSE, self.OnCancelClicked)
 
     def OnAlgorithmSelected(self, evt):
         self.presenter.SetAlgorithm(evt.GetSelection(), evt.GetString())
@@ -59,7 +62,8 @@ class Interactor(object):
 
     def OnProcessClicked(self, evt):
         self.presenter.SetAlgorithm(self.view.getAlgorithmSelection(), "algorithm")
-        self.presenter.Process(False)
+        self.presenter.Process()
 
-    def OnGraphicClicked(self, evt):
-        self.presenter.Process(True)
+    def OnCancelClicked(self, evt):
+        # self.presenter.Process(True)
+        self.presenter.Cancel()

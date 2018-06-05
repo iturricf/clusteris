@@ -7,6 +7,9 @@ class Dummy(object):
     def __init__(self, params):
         self.NClusters = params['n_clusters']
 
+    def SetListener(self, listener):
+        pass
+
     def Fit(self, dataset):
         self.dataset = dataset
         self.rows, self.cols = list(dataset.shape)

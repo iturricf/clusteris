@@ -13,8 +13,6 @@ class ConfigView(wx.Dialog):
 
     def __init__(self, parent):
         """Constructor. Initializes the wxPython app and Builds main UI."""
-        self.app = wx.App(0)
-
         self.BuildMainUI(parent)
 
     def BuildMainUI(self, parent):
@@ -179,13 +177,13 @@ class ConfigView(wx.Dialog):
         """The action button UI. Start processing the dataset."""
         bSizerAction = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.buttonGraphic = wx.Button(self.panelAction, wx.ID_ANY, u"Graficar", wx.DefaultPosition, wx.DefaultSize, 0)
-        bSizerAction.Add(self.buttonGraphic, 0, wx.ALIGN_CENTER, 5)
+        self.buttonCancel = wx.Button(self.panelAction, wx.ID_ANY, u"Ca&ncelar", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizerAction.Add(self.buttonCancel, 0, wx.ALIGN_CENTER, 5)
 
         self.buttonProcess = wx.Button(self.panelAction, wx.ID_ANY, u"P&rocesar", wx.DefaultPosition, wx.DefaultSize, 0)
         bSizerAction.Add(self.buttonProcess, 0, wx.ALIGN_CENTER, 5)
 
-        container.Add(bSizerAction, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+        container.Add(bSizerAction, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
 
     def BuildParamsUI(self, container):
         """Processing params."""
@@ -282,6 +280,9 @@ class ConfigView(wx.Dialog):
     def SetAlgorithmSelection(self, value):
         self.choiceAlgorithm.SetSelection(value)
 
+    def getAlgorithmSelection(self):
+        return self.choiceAlgorithm.GetSelection()
+
     def DisableProcessButton(self):
         self.buttonProcess.Disable()
 
@@ -349,9 +350,7 @@ class ConfigView(wx.Dialog):
         """ Initializes the main loop for this UI. Starts listening events."""
         self.sizerMain.Fit(self)
         self.Centre(wx.BOTH)
-        self.Show(True)
-
-        self.app.MainLoop()
+        return self.ShowModal()
 
     def __del__(self):
         pass
