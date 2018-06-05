@@ -10,8 +10,6 @@ class Interactor(object):
         self.presenter = presenter
         self.view = view
 
-        view.buttonSelectDataset.Bind(wx.EVT_BUTTON, self.OnFileSelectorClicked)
-        view.checkParseFeatures.Bind(wx.EVT_CHECKBOX, self.OnParseAttributesToggle)
         view.buttonGraphic.Bind(wx.EVT_BUTTON, self.OnGraphicClicked)
         view.choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
         view.spinCentroidsParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
@@ -24,17 +22,7 @@ class Interactor(object):
         view.spinIterationParam.Bind(wx.EVT_SPINCTRL, self.OnIterationsSpinCtrl)
         view.radioFixedClassParam.Bind(wx.EVT_RADIOBUTTON, self.OnRadioFixedClassParamClicked)
         view.radioVarClassParam.Bind(wx.EVT_RADIOBUTTON, self.OnRadioVarClassParamClicked)
-        view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
         view.buttonProcess.Bind(wx.EVT_BUTTON, self.OnProcessClicked)
-
-    def OnFileSelectorClicked(self, evt):
-        self.presenter.ShowFileDialog()
-
-    def OnFileSelected(self, evt):
-        self.presenter.SetSelectedFile(evt.path)
-
-    def OnParseAttributesToggle(self, evt):
-        self.presenter.ToggleParseAttributes(evt.IsChecked())
 
     def OnAlgorithmSelected(self, evt):
         self.presenter.SetAlgorithm(evt.GetSelection(), evt.GetString())
