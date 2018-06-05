@@ -23,6 +23,7 @@ class Interactor(object):
         view.Bind(wx.EVT_CLOSE, self.OnExitClicked)
 
         view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
+        view.Bind(view.EVT_EXPORT_CSV_FILE_SELECTED, self.OnExportCsvFileSelected)
 
     def OnOpenDatasetClicked(self, evt):
         self.presenter.ShowFileDialog()
@@ -32,6 +33,9 @@ class Interactor(object):
 
     def OnExportCsvClicked(self, evt):
         self.presenter.ShowExportCsvDialog()
+
+    def OnExportCsvFileSelected(self, evt):
+        self.presenter.ExportCsvFile(evt.path)
 
     def OnFileSelected(self, evt):
         self.presenter.SetSelectedFile(evt.path)
