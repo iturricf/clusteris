@@ -112,11 +112,13 @@ class Presenter(object):
 
     def ShowExportImageDialog(self):
         print('DEBUG - ShowExportImageDialog')
+        exportFilename, extension = splitext(basename(self.model.datasetPath))
+        self.view.ShowSavePngFileDialog("%s-plot.png" % exportFilename)
 
     def ShowExportCsvDialog(self):
         print('DEBUG - ShowExportCsvDialog')
         exportFilename, extension = splitext(basename(self.model.datasetPath))
-        self.view.ShowSaveCsvFileDialog("%s-result%s" %(exportFilename, extension))
+        self.view.ShowSaveCsvFileDialog("%s-result%s" % (exportFilename, extension))
 
     def ShowDatasetConfigDialog(self):
         print('DEBUG - ShowDatasetConfigDialog')
@@ -208,6 +210,26 @@ class Presenter(object):
                 plotter.PlotCentroids3D(self.result.centroids, axes=self.model.colsForAxes)
 
         plotter.Show()
+
+    def ExportPngFile(self, path):
+        clusters = 1 if self.model.clusteringAlgorithm == 0 else self.model.clusters
+
+        print('DEBUG - Clusters a graficar: %d' % clusters)
+        plotter = Plotter()
+
+        if (self.model.selectedAxes < 3):
+            plotter.PlotSamples2D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=clusters)
+
+            if (len(self.result.centroids)):
+                plotter.PlotCentroids2D(self.result.centroids, axes=self.model.colsForAxes)
+
+        else:
+            plotter.PlotSamples3D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=clusters)
+
+            if (len(self.result.centroids)):
+                plotter.PlotCentroids3D(self.result.centroids, axes=self.model.colsForAxes)
+
+        plotter.SaveTo(path)
 
     def ExportCsvFile(self, path):
         print('DEBUG - Export CSV to: %s' % path)

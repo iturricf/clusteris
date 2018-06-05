@@ -16,6 +16,7 @@ class MainView (wx.Frame):
     # Custom Events for dataset file selection
     FileSelectedEvent, EVT_FILE_SELECTED = wx.lib.newevent.NewEvent()
     ExportCsvFileSelectedEvent, EVT_EXPORT_CSV_FILE_SELECTED = wx.lib.newevent.NewEvent()
+    ExportPngFileSelectedEvent, EVT_EXPORT_PNG_FILE_SELECTED = wx.lib.newevent.NewEvent()
 
     def __init__(self, parent):
         """Constructor. Initializes the wxPython app and Builds main UI."""
@@ -232,6 +233,26 @@ class MainView (wx.Frame):
                 return
 
             wx.PostEvent(self, self.ExportCsvFileSelectedEvent(path=fileDialog.GetPath()))
+
+    def ShowSavePngFileDialog(self, filename):
+
+        wildcard = "PNG Image (*.png)|*.png"
+
+        with wx.FileDialog(
+            self,
+            message='Guardar resultado de Plot',
+            wildcard=wildcard,
+            defaultDir="../samples",
+            style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT
+        ) as fileDialog:
+
+            fileDialog.SetFilename(filename)
+
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                print('DEBUG - Cancelado')
+                return
+
+            wx.PostEvent(self, self.ExportPngFileSelectedEvent(path=fileDialog.GetPath()))
 
     def ShowErrorMessage(self, message):
         wx.LogError(message)

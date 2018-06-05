@@ -24,12 +24,16 @@ class Interactor(object):
 
         view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
         view.Bind(view.EVT_EXPORT_CSV_FILE_SELECTED, self.OnExportCsvFileSelected)
+        view.Bind(view.EVT_EXPORT_PNG_FILE_SELECTED, self.OnExportPngFileSelected)
 
     def OnOpenDatasetClicked(self, evt):
         self.presenter.ShowFileDialog()
 
     def OnExportImageClicked(self, evt):
         self.presenter.ShowExportImageDialog()
+
+    def OnExportPngFileSelected(self, evt):
+        self.presenter.ExportPngFile(evt.path)
 
     def OnExportCsvClicked(self, evt):
         self.presenter.ShowExportCsvDialog()

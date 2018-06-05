@@ -89,3 +89,7 @@ class Plotter(object):
 
 
         print("Width: %s" % g)
+
+    def SaveTo(self, path):
+        plt.savefig(path)
+        plt.close()
