@@ -169,51 +169,5 @@ class Presenter(object):
         print('DEBUG - Modal TRUE')
         self.view.EndModal(True)
 
-        # className = self.params.CLUSTERING_PROCESSORS[self.model.clusteringAlgorithm]
-
-        # procModule = []
-
-        # procModule.append(importlib.import_module('processor.dummy'))
-        # procModule.append(importlib.import_module('processor.kmeans'))
-        # procModule.append(importlib.import_module('processor.genetic_plus'))
-
-        # procClass = getattr(procModule[self.model.clusteringAlgorithm], className)
-
-        # processor = procClass({'n_clusters': self.model.clusters})
-        # if self.model.clusteringAlgorithm == 0:
-        #     processor.Fit(Dataset)
-        # else:
-        #     if self.model.clusteringAlgorithm == 1:
-        #         processor.Fit(Dataset)
-        #     if self.model.clusteringAlgorithm == 2:
-        #         processor.Fit(Dataset, self.model.maxPopulation, self.model.maxIterations)
-
-        # labels = processor.GetLabels()
-        # centroids = processor.GetCentroids()
-
-        # plotter = Plotter()
-
-        # clusters = self.model.clusters
-
-        # if (self.model.clusteringAlgorithm == 0):
-        #     clusters = 1
-
-        # if (self.model.selectedAxes < 3):
-        #     clusters = self.model.clusters
-        #     if (self.model.clusteringAlgorithm == 0):
-        #         clusters = 1
-        #     plotter.PlotSamples2D(Dataset, axes=self.model.colsForAxes, labels=labels, clusters=clusters)
-
-        #     if (len(centroids)):
-        #         plotter.PlotCentroids2D(centroids, axes=self.model.colsForAxes)
-
-        # else:
-        #     plotter.PlotSamples3D(Dataset, axes=self.model.colsForAxes, labels=labels, clusters=clusters)
-
-        #     if (len(centroids)):
-        #         plotter.PlotCentroids3D(centroids, axes=self.model.colsForAxes)
-
-        # plotter.Show()
-
     def Start(self):
         return self.view.Start()
