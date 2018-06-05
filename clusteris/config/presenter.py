@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import csv
 import importlib
 
 import numpy as np
@@ -43,9 +42,6 @@ class Presenter(object):
 
     def InitView(self):
         """Sets default values for the UI."""
-        self.view.SetParseFeaturesCheckbox(self.params.DATASET_PARSE_FEATURES_DEFAULT_VALUE)
-        self.view.SetLabelSamplesCountText('Cantidad de muestras: N/A')
-        self.view.SetLabelFeaturesCountText('Cantidad de atributos: N/A')
         self.view.SetCentroidSpinRange(self.params.CENTROID_MIN_VALUE, self.params.CENTROID_MAX_VALUE)
         self.view.SetCentroidSpinValue(self.params.CENTROID_DEFAULT_VALUE)
         self.view.SetLabelPopulationText("Cantidad de individuos [" + str(self.params.POPULATION_MIN_VALUE) + " - " + str(self.params.POPULATION_MAX_VALUE) + "]")
@@ -59,10 +55,21 @@ class Presenter(object):
 
         self._DisablePlotterOptions()
 
-        self.view.DisableProcessButton()
+        # self.view.DisableProcessButton()
 
-    def ShowFileDialog(self):
-        self.view.ShowFileDialog()
+        self.columnsForAxes = range(3)
+
+        if (self.datasetFeaturesCount == 2):
+            self.view.Enable2DRadio()
+
+            self.Radio2DClicked(True)
+
+        if (self.datasetFeaturesCount >= 3):
+            self.view.Enable2DRadio()
+            self.view.Enable3DRadio()
+            self.view.Set3DSelected()
+
+            self.Radio3DClicked(True)
 
     def SetAlgorithm(self, index, name):
         print("DEBUG - Selected index: %d; value: %s" % (index, name))
@@ -84,61 +91,6 @@ class Presenter(object):
     def SetIterationParam(self, value):
         print("DEBUG - Iteration value: %d" % value)
         self.iterationsNumber = value
-
-    def ToggleParseAttributes(self, isChecked):
-        print('DEBUG - Parse attributes: %s' % isChecked)
-        self.parseAttributes = isChecked
-        self.ParseDatasetFile()
-
-    def SetSelectedFile(self, path):
-        print('DEBUG - Selected path: %s' % path)
-        self.datasetPath = path
-
-        self.ParseDatasetFile()
-
-    def ParseDatasetFile(self):
-        try:
-            delimiter = self._DetectDelimiter(self.datasetPath)
-            if (not self.parseAttributes):
-                parseHeader = None
-            else:
-                parseHeader = 0
-
-            print('DEBUG - CSV Delimiter: %s' % delimiter)
-
-            # Reads CSV file as Pandas DataFrame
-            self.dataset = pd.read_csv(self.datasetPath, header=parseHeader, sep=delimiter)
-
-            self.datasetSamplesCount, self.datasetFeaturesCount = list(self.dataset.shape)
-            self.columnNames = ["Column %s" % str(c) for c in self.dataset.columns]
-
-            attributes = ", ".join(str(c) for c in self.dataset.columns)
-
-            print('DEBUG - Dataset samples: %d' % self.datasetSamplesCount)
-            print('DEBUG - Dataset attributes: %s' % self.datasetFeaturesCount)
-            print('DEBUG - Dataset attributes names: %s' % attributes)
-
-            self.view.SetLabelSamplesCountText('Cantidad de muestras: %d' % self.datasetSamplesCount)
-            self.view.SetLabelFeaturesCountText('Cantidad de atributos: %d' % self.datasetFeaturesCount)
-
-            self.view.EnableProcessButton()
-
-            self.columnsForAxes = range(3)
-
-            if (self.datasetFeaturesCount == 2):
-                self.view.Enable2DRadio()
-
-                self.Radio2DClicked(True)
-
-            if (self.datasetFeaturesCount >= 3):
-                self.view.Enable2DRadio()
-                self.view.Enable3DRadio()
-                self.view.Set3DSelected()
-
-                self.Radio3DClicked(True)
-
-        except IOError:
-            self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % self.datasetPath)
 
     def Radio2DClicked(self, value):
         print('DEBUG - Plotter 2D: %s' % value)
@@ -213,15 +165,6 @@ class Presenter(object):
 
         return True
 
-    def _DetectDelimiter(self, path):
-        """Tries to infer the delimiter symbol in a CSV file using csv Sniffer class."""
-        sniffer = csv.Sniffer()
-        sniffer.preferred = ['|', ';', ',', '\t', ' ']
-        with open(path, 'r') as file:
-            line = file.readline()
-            dialect = sniffer.sniff(line)
-            return dialect.delimiter
-
     def Process(self, graphic):
         if self.dataset is None:
             self.view.ShowErrorMessage("No se ha seleccionado el dataset aún.")
@@ -230,15 +173,6 @@ class Presenter(object):
         if not self._IsPlotterConfigValid():
             self.view.ShowErrorMessage("Las columnas para los ejes seleccionados debe ser distinta para cada uno.")
             return False
-
-        samples = []
-
-        # Split Pandas DataFrame into columns
-        for i in self.dataset.columns:
-            samples.append(self.dataset[i].values)
-
-        # Convert DataFrame columns into Numpy Array
-        Dataset = np.array(list(zip(*samples)))
 
         if graphic:
             self.SetAlgorithm(0, "Graphic")
