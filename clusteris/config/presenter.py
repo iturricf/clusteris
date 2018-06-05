@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import importlib
-
-import numpy as np
-import pandas as pd
-
-import processor.genetic
-from plotter import Plotter
-from processor.dummy import Dummy
-from processor.kmeans import KMeans
-from processor.genetic_plus import Genetic
+from copy import deepcopy
 
 class Presenter(object):
     """
@@ -21,6 +12,8 @@ class Presenter(object):
         self.interactor = interactor
         self.params = params
 
+        self.localModel = deepcopy(self.model)
+
         interactor.Connect(self, view)
 
         self.InitModel()
@@ -29,10 +22,10 @@ class Presenter(object):
     def InitModel(self):
         print('DEBUG - INIT presenter')
 
-        self.model.clusteringAlgorithm = self.params.CLUSTERING_ALGORITHM_DEFAULT
-        self.model.clusters = self.params.CENTROID_DEFAULT_VALUE
-        self.model.maxPopulation = self.params.POPULATION_DEFAULT_VALUE
-        self.model.maxIterations = self.params.ITERATION_DEFAULT_VALUE
+        self.localModel.clusteringAlgorithm = self.params.CLUSTERING_ALGORITHM_DEFAULT
+        self.localModel.clusters = self.params.CENTROID_DEFAULT_VALUE
+        self.localModel.maxPopulation = self.params.POPULATION_DEFAULT_VALUE
+        self.localModel.maxIterations = self.params.ITERATION_DEFAULT_VALUE
 
     def InitView(self):
         """Sets default values for the UI."""
@@ -50,19 +43,17 @@ class Presenter(object):
 
         self._DisablePlotterOptions()
 
-        if (self.model.datasetCols == 2):
+        if (self.localModel.datasetCols == 2):
             self.view.Enable2DRadio()
 
             self.Radio2DClicked(True)
 
-        if (self.model.datasetCols >= 3):
+        if (self.localModel.datasetCols >= 3):
             self.view.Enable2DRadio()
             self.view.Enable3DRadio()
             self.view.Set3DSelected()
 
             self.Radio3DClicked(True)
-
-        print(self.model.datasetRows, self.model.datasetCols, self.model.selectedAxes)
 
     def SetAlgorithm(self, index, name):
         print("DEBUG - Selected index: %d; value: %s" % (index, name))
@@ -71,25 +62,25 @@ class Presenter(object):
         else:
             if(index == 2):
                 self.view.ShowGeneticParameters()
-        self.model.clusteringAlgorithm = index
+        self.localModel.clusteringAlgorithm = index
 
     def SetCentroidParam(self, value):
         print("DEBUG - Selected value: %d" % value)
-        self.model.clusters = value
+        self.localModel.clusters = value
 
     def SetPopulationParam(self, value):
         print("DEBUG - Population value: %d" % value)
-        self.model.maxPopulation = value
+        self.localModel.maxPopulation = value
 
     def SetIterationParam(self, value):
         print("DEBUG - Iteration value: %d" % value)
-        self.model.maxIterations = value
+        self.localModel.maxIterations = value
 
     def Radio2DClicked(self, value):
         print('DEBUG - Plotter 2D: %s' % value)
         if value:
-            self.model.selectedAxes = 2
-            self._SetAllAxesList(self.model.datasetColsNames)
+            self.localModel.selectedAxes = 2
+            self._SetAllAxesList(self.localModel.datasetColsNames)
             self.view.SetZAxeList([])
             self.view.DisableZAxeChoice()
 
@@ -98,15 +89,15 @@ class Presenter(object):
             self.view.SetYAxeSelection(1)
             self.SetSelectedAxe(1, 1)
 
-            if (self.model.datasetCols > 2):
+            if (self.localModel.datasetCols > 2):
                 self.view.EnableXAxeChoice()
                 self.view.EnableYAxeChoice()
 
     def Radio3DClicked(self, value):
         print('DEBUG - Plotter 3D: %s' % value)
         if value:
-            self.model.selectedAxes = 3
-            self._SetAllAxesList(self.model.datasetColsNames)
+            self.localModel.selectedAxes = 3
+            self._SetAllAxesList(self.localModel.datasetColsNames)
 
             self._DisableAllLists()
 
@@ -117,15 +108,15 @@ class Presenter(object):
             self.view.SetZAxeSelection(2)
             self.SetSelectedAxe(2, 2)
 
-            if (self.model.datasetCols > 3):
+            if (self.localModel.datasetCols > 3):
                 self.view.EnableXAxeChoice()
                 self.view.EnableYAxeChoice()
                 self.view.EnableZAxeChoice()
 
     def SetSelectedAxe(self, axe, value):
         print('DEBUG - Selected axe value: %d - %d' % (axe, value))
-        self.model.colsForAxes[axe] = value
-        print("Axes:: %s" % self.model.colsForAxes)
+        self.localModel.colsForAxes[axe] = value
+        print("Axes:: %s" % self.localModel.colsForAxes)
 
     def RadioFixedClassParamClicked(self, value):
         self.view.HideVarClassesParameter()
@@ -142,9 +133,9 @@ class Presenter(object):
         self._DisableAllLists()
 
     def _SetAllAxesList(self, value):
-        self.view.SetXAxeList(self.model.datasetColsNames)
-        self.view.SetYAxeList(self.model.datasetColsNames)
-        self.view.SetZAxeList(self.model.datasetColsNames)
+        self.view.SetXAxeList(self.localModel.datasetColsNames)
+        self.view.SetYAxeList(self.localModel.datasetColsNames)
+        self.view.SetZAxeList(self.localModel.datasetColsNames)
 
     def _DisableAllLists(self):
         self.view.DisableXAxeChoice()
@@ -152,8 +143,8 @@ class Presenter(object):
         self.view.DisableZAxeChoice()
 
     def _IsPlotterConfigValid(self):
-        for i in range(self.model.selectedAxes - 1):
-            if self.model.colsForAxes[i] == self.model.colsForAxes[i+1]:
+        for i in range(self.localModel.selectedAxes - 1):
+            if self.localModel.colsForAxes[i] == self.localModel.colsForAxes[i+1]:
                 return False
 
         return True
@@ -166,7 +157,10 @@ class Presenter(object):
             self.view.ShowErrorMessage("Las columnas para los ejes seleccionados debe ser distinta para cada uno.")
             return False
 
-        print('DEBUG - Modal TRUE')
+        # Copio los parametros modificados al modelo global
+        for k, v in self.localModel.__dict__.items():
+            setattr(self.model, k, v)
+
         self.view.EndModal(True)
 
     def Start(self):

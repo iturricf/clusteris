@@ -61,9 +61,7 @@ class Interactor(object):
         self.presenter.RadioVarClassParamClicked(evt.IsChecked())
 
     def OnProcessClicked(self, evt):
-        self.presenter.SetAlgorithm(self.view.getAlgorithmSelection(), "algorithm")
         self.presenter.Process()
 
     def OnCancelClicked(self, evt):
-        # self.presenter.Process(True)
         self.presenter.Cancel()

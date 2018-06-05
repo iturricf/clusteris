@@ -15,9 +15,6 @@ from config.presenter import Presenter as ConfigPresenter
 
 from model import Results
 from plotter import Plotter
-# from processor.dummy import Dummy
-# from processor.genetic_plus import Genetic
-# from processor.kmeans import KMeans
 
 class Presenter(object):
     """
@@ -65,7 +62,6 @@ class Presenter(object):
             # Reads CSV file as Pandas DataFrame
             self.model.dataset = pd.read_csv(self.model.datasetPath, header=parseHeader, sep=delimiter)
 
-            # self.datasetSamplesCount, self.datasetFeaturesCount = list(self.dataset.shape)
             self.model.datasetRows, self.model.datasetCols = list(self.model.dataset.shape)
             self.model.datasetColsNames = ["Column %s" % str(c) for c in self.model.dataset.columns]
 
@@ -121,15 +117,11 @@ class Presenter(object):
     def ShowDatasetConfigDialog(self):
         print('DEBUG - ShowDatasetConfigDialog')
 
-        print(self.model.datasetRows, self.model.datasetCols, self.model.selectedAxes)
-
         view = ConfigView(self.view)
         interactor = ConfigInteractor()
         presenter = ConfigPresenter(view, interactor, self.model, self.params)
 
         if (presenter.Start()):
-            print('DEBUG - Despues del dialogo')
-            print(self.model.datasetRows, self.model.datasetCols, self.model.selectedAxes)
             self.Process()
         else:
             print('DEBUG - CANCELLED')
@@ -191,7 +183,7 @@ class Presenter(object):
         print('DEBUG - Plot')
         threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
         threadPlotter.start()
-        threadProcess.join()
+        # threadPlotter.join()
 
     def _PlotThread(self):
         clusters = 1 if self.model.clusteringAlgorithm == 0 else self.model.clusters
