@@ -28,10 +28,20 @@ class MainView (wx.Frame):
 
         self.BuildMainUI()
 
+        self.SetCustomIcon()
+
         # Add status bar
         self.statusBar = self.CreateStatusBar(1, wx.STB_SIZEGRIP|wx.STB_SHOW_TIPS|wx.STB_ELLIPSIZE_START, wx.ID_ANY)
         self.statusBar.SetFieldsCount(4, [-6, -1, -1, -2])
         self.statusBar.SetStatusStyles([wx.SB_RAISED, wx.SB_SUNKEN, wx.SB_SUNKEN, wx.SB_SUNKEN])
+
+    def SetCustomIcon(self):
+        iconPath = "resources/clusteris.ico"
+
+        icon = wx.EmptyIcon()
+        icon.CopyFromBitmap(wx.Bitmap(iconPath, wx.BITMAP_TYPE_ANY))
+
+        self.SetIcon(icon)
 
     def BuildMenubar(self):
         self.menubarMain = wx.MenuBar(0)
