@@ -189,9 +189,12 @@ class Presenter(object):
         print('DEBUG - Plot')
 
         self._PlotThread()
+
+        # Se deshabilita el thread separado para el graficador debido a que causa
+        # problemas cuando la aplicación corre en Windows
+
         # threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
         # threadPlotter.start()
-        # time.sleep(1)
         # threadPlotter.join()
 
     def _PlotThread(self):
