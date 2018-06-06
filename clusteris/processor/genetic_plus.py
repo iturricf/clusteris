@@ -156,7 +156,7 @@ class Genetic(object):
 
     def GetLabels(self):
         """ Devuelve un array de etiquetas asociadas a cada punto."""
-        return self.bestIndividual.elements
+        return np.array(self.bestIndividual.elements)
 
     def _GetMutated(self, quantity=1):
         """ Intenta devolver mutaciones de los individuos de la población, en la cantidad especificada."""
