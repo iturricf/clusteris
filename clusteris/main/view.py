@@ -259,7 +259,7 @@ class MainView (wx.Frame):
 
     def ShowProgressDialog(self):
         print('DEBUG - Show Progress')
-        self.progress = wx.ProgressDialog("Procesando dataset", "por favor espere", maximum=100, parent=self, style=wx.PD_SMOOTH|wx.PD_APP_MODAL)
+        self.progress = wx.ProgressDialog("Procesando dataset", "por favor espere", maximum=100, parent=self, style=wx.PD_SMOOTH|wx.PD_AUTO_HIDE)
         self.progress.ShowModal()
 
     def AdjustProgressRange(self, maxRange):

@@ -136,7 +136,7 @@ class Genetic(object):
 
             t.AddTime("Iteration %d" % it)
 
-            wx.CallAfter(self.listener.UpdateProgress, it)
+            wx.CallAfter(self.listener.UpdateProgress, it+1)
 
         # 7. Ultima condición de parada, fin de las iteraciones
         # Si no encontré una solución antes, uso la mejor despues del proceso
