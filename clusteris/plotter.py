@@ -84,9 +84,7 @@ class Plotter(object):
 
 
         plt.legend()
-        plt.show()
-
-
+        plt.show(block=True)
 
         print("Width: %s" % g)
 

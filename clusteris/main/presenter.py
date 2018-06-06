@@ -187,11 +187,18 @@ class Presenter(object):
 
     def Plot(self):
         print('DEBUG - Plot')
+
         threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
         threadPlotter.start()
         # threadPlotter.join()
 
     def _PlotThread(self):
+        plot = self.CreatePlot()
+        plot.Show()
+
+        exit()
+
+    def CreatePlot(self):
         clusters = 1 if self.model.clusteringAlgorithm == 0 else self.model.clusters
 
         print('DEBUG - Clusters a graficar: %d' % clusters)
@@ -209,27 +216,11 @@ class Presenter(object):
             if (len(self.result.centroids)):
                 plotter.PlotCentroids3D(self.result.centroids, axes=self.model.colsForAxes)
 
-        plotter.Show()
+        return plotter
 
     def ExportPngFile(self, path):
-        clusters = 1 if self.model.clusteringAlgorithm == 0 else self.model.clusters
-
-        print('DEBUG - Clusters a graficar: %d' % clusters)
-        plotter = Plotter()
-
-        if (self.model.selectedAxes < 3):
-            plotter.PlotSamples2D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=clusters)
-
-            if (len(self.result.centroids)):
-                plotter.PlotCentroids2D(self.result.centroids, axes=self.model.colsForAxes)
-
-        else:
-            plotter.PlotSamples3D(self.model.dataset, axes=self.model.colsForAxes, labels=self.result.labels, clusters=clusters)
-
-            if (len(self.result.centroids)):
-                plotter.PlotCentroids3D(self.result.centroids, axes=self.model.colsForAxes)
-
-        plotter.SaveTo(path)
+        plot = self.CreatePlot()
+        plot.SaveTo(path)
 
     def ExportCsvFile(self, path):
         print('DEBUG - Export CSV to: %s' % path)
