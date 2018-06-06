@@ -4,21 +4,18 @@ Este trabajo consiste en implementar algoritmos genéticos que permitan encontra
 
 ## Requirements:
 * Python 2.7.12
+* Linux 64-bits
 
-Además las siguientes librerías:
-* wxPython (pip install -U wxPython)
-* SKLearn
-* Scipy
-* Numpy
-* Pandas
-* matplotlib
-* mpldatacursor
+Además de las siguientes especificadas en el archivo requirements.txt
 
-Todas estas librerias se pueden instalar con ```pip```. Por ejemplo:
-```
-pip install numpy==1.13.1 matplotlib==2.0.0 pandas==0.20.3 scipy==1.1.0 scikit_learn==0.19.0 mpldatacursor==0.6.2 wxpython==4.0.1
-```
+## Instalación
 
-## Running:
+### Linux
 
-```python clusteris.py```
+ * Instalar python: `sudo apt-get install python2.7`
+ * Instalar python-pip: `sudo apt-get install python-pip`
+ * Instalar dependencias de la aplicación: `sudo pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 -r requirements.txt`
+
+## Ejecución
+
+```python clusteris/clusteris.py```
