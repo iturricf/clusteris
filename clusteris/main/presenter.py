@@ -196,10 +196,11 @@ class Presenter(object):
 
         processPlotter = multiprocessing.Process(None, self._PlotThread)
         processPlotter.start()
-        # processPlotter.join()
+        processPlotter.join()
 
     def _PlotThread(self):
         plot = self.CreatePlot()
+        print('DEBUG - Antes de imprimir!!')
         plot.Show()
 
         exit()
