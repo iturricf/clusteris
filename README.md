@@ -4,6 +4,7 @@ Este trabajo consiste en implementar algoritmos genéticos que permitan encontra
 
 ## Requirements:
 * Python 2.7.12
+* Python PIP
 * Linux 64-bits o Microsoft Windows 10
 
 
