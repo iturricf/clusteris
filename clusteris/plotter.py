@@ -83,9 +83,9 @@ class Plotter(object):
         g = manager.window.geometry()
 
         plt.legend()
-        plt.show(block=True)
+        plt.show()
 
-        print("Width: %s" % g)
+        # print("Width: %s" % g)
 
     def SaveTo(self, path):
         plt.savefig(path)
