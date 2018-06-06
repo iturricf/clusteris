@@ -14,7 +14,8 @@ class Genetic(object):
     MAX_ITERATIONS = 10 # Cantidad de iteraciones
     FITNESS_THRESHOLD = 0.1
 
-    SELECTION_RATIO = 0.2 # Porcentaje de selección
+    ELITE_RATIO = 0.1
+    SELECTION_RATIO = 0.1 # Porcentaje de selección
     CROSSING_RATIO = 0.6 # Porcentaje de cruza
     MUTATION_RATIO = 0.2 # Porcentaje de mutación
 
@@ -65,8 +66,13 @@ class Genetic(object):
             # 4. Selección de individuos. Elitista + Ruleta
 
             # Aseguro al mejor miembro de la población
-            eliteInd = self._ElitistSelection()
-            newPop.append(eliteInd)
+            eliteAmount = int(len(self.population) * self.ELITE_RATIO)
+
+            eliteSelection = self._ElitistSelection(eliteAmount)
+            newPop.extend(eliteSelection)
+
+            print('DEBUG - Elite amount: %s' % eliteAmount)
+            print("New pop lenght: %d" % len(newPop))
 
             # Selecciona el resto por ruleta
 
@@ -156,7 +162,7 @@ class Genetic(object):
 
     def GetLabels(self):
         """ Devuelve un array de etiquetas asociadas a cada punto."""
-        return self.bestIndividual.elements
+        return np.array(self.bestIndividual.elements)
 
     def _GetMutated(self, quantity=1):
         """ Intenta devolver mutaciones de los individuos de la población, en la cantidad especificada."""
@@ -214,9 +220,11 @@ class Genetic(object):
 
         return [self.population[key] for key in positions]
 
-    def _ElitistSelection(self):
+    def _ElitistSelection(self, quantity=1):
         """ Selección elitista del mejor individuo."""
-        return self.population[np.argmax(self.fitness)]
+
+        eliteIndexes = np.argpartition(self.fitness, quantity*-1)[quantity*-1:]
+        return [self.population[key] for key in eliteIndexes]
 
     def _GetInitialPop(self):
         """ Generación de población inicial aleatoria basada en puntos existentes."""
