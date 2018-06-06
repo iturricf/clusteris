@@ -24,6 +24,9 @@ class Presenter(object):
 
         self.localModel.clusteringAlgorithm = self.params.CLUSTERING_ALGORITHM_DEFAULT
         self.localModel.clusters = self.params.CENTROID_DEFAULT_VALUE
+        self.localModel.clustersFixed = self.params.CENTROID_FIXED_DEFAULT_VALUE
+        self.localModel.clusters_range_min = self.params.CENTROID_RANGE_MIN_VALUE
+        self.localModel.clusters_range_max = self.params.CENTROID_RANGE_MAX_VALUE
         self.localModel.maxPopulation = self.params.POPULATION_DEFAULT_VALUE
         self.localModel.maxIterations = self.params.ITERATION_DEFAULT_VALUE
 
@@ -31,6 +34,10 @@ class Presenter(object):
         """Sets default values for the UI."""
         self.view.SetCentroidSpinRange(self.params.CENTROID_MIN_VALUE, self.params.CENTROID_MAX_VALUE)
         self.view.SetCentroidSpinValue(self.params.CENTROID_DEFAULT_VALUE)
+        self.view.SetCentroidParamFromRange(self.params.CENTROID_MIN_VALUE, self.params.CENTROID_MAX_VALUE)
+        self.view.SetCentroidParamFrom(self.params.CENTROID_MIN_VALUE)
+        self.view.SetCentroidParamToRange(self.params.CENTROID_MIN_VALUE, self.params.CENTROID_MAX_VALUE)
+        self.view.SetCentroidParamTo(self.params.CENTROID_MAX_VALUE)
         self.view.SetLabelPopulationText("Cantidad de individuos [" + str(self.params.POPULATION_MIN_VALUE) + " - " + str(self.params.POPULATION_MAX_VALUE) + "]")
         self.view.SetPopulationSpinRange(self.params.POPULATION_MIN_VALUE, self.params.POPULATION_MAX_VALUE)
         self.view.SetPopulationSpinValue(self.params.POPULATION_DEFAULT_VALUE)
@@ -67,6 +74,14 @@ class Presenter(object):
     def SetCentroidParam(self, value):
         print("DEBUG - Selected value: %d" % value)
         self.localModel.clusters = value
+
+    def SetCentroidRangeMinParam(self, value):
+        print("DEBUG - Selected value: %d" % value)
+        self.localModel.clusters_range_min = value
+
+    def SetCentroidRangeMaxParam(self, value):
+        print("DEBUG - Selected value: %d" % value)
+        self.localModel.clusters_range_max = value
 
     def SetPopulationParam(self, value):
         print("DEBUG - Population value: %d" % value)
@@ -119,10 +134,12 @@ class Presenter(object):
         print("Axes:: %s" % self.localModel.colsForAxes)
 
     def RadioFixedClassParamClicked(self, value):
+        self.localModel.clustersFixed = True
         self.view.HideVarClassesParameter()
         self.view.ShowFixedClassesParameter()
 
     def RadioVarClassParamClicked(self, value):
+        self.localModel.clustersFixed = False
         self.view.HideFixedClassesParameter()
         self.view.ShowVarClassesParameter()
 
@@ -156,6 +173,12 @@ class Presenter(object):
         if not self._IsPlotterConfigValid():
             self.view.ShowErrorMessage("Las columnas para los ejes seleccionados debe ser distinta para cada uno.")
             return False
+
+        # Si eligio rango de clases, verificamos que el rango sea valido
+        if self.view.getRadioFixedClassParam() is False:
+            if self.view.getspinVarClassParamFrom() >= self.view.getspinVarClassParamTo():
+                self.view.ShowErrorMessage("El rango de clases para optimizar no es valido.")
+                return False
 
         # Copio los parametros modificados al modelo global
         for k, v in self.localModel.__dict__.items():

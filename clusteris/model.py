@@ -6,6 +6,9 @@ class Params():
     CENTROID_MIN_VALUE = 2
     CENTROID_MAX_VALUE = 10
     CENTROID_DEFAULT_VALUE = 2
+    CENTROID_FIXED_DEFAULT_VALUE = True
+    CENTROID_RANGE_MIN_VALUE = 2
+    CENTROID_RANGE_MAX_VALUE = 10
 
     POPULATION_MIN_VALUE = 5
     POPULATION_MAX_VALUE = 50
@@ -38,6 +41,10 @@ class Processing():
         self.selectedAxes = None
         self.colsForAxes = None
         self.clusters = None
+        self.clustersFixed = None
+        self.clusters_range_min = None
+        self.clusters_range_max = None
+
 
         self.parseAttributes = None
 

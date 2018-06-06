@@ -11,7 +11,9 @@ class Interactor(object):
         self.view = view
 
         view.choiceAlgorithm.Bind(wx.EVT_CHOICE, self.OnAlgorithmSelected)
-        view.spinCentroidsParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
+        view.spinFixedClassParam.Bind(wx.EVT_SPINCTRL, self.OnCentroidSpinCtrl)
+        view.spinVarClassParamFrom.Bind(wx.EVT_SPINCTRL, self.OnCentroidRangeMinSpinCtrl)
+        view.spinVarClassParamTo.Bind(wx.EVT_SPINCTRL, self.OnCentroidRangeMaxSpinCtrl)
         view.radioBtn2D.Bind(wx.EVT_RADIOBUTTON, self.OnRadioButton2DClicked)
         view.radioBtn3D.Bind(wx.EVT_RADIOBUTTON, self.OnRadioButton3DClicked)
         view.choiceXAxe.Bind(wx.EVT_CHOICE, self.OnXAxeSelected)
@@ -32,6 +34,12 @@ class Interactor(object):
 
     def OnCentroidSpinCtrl(self, evt):
         self.presenter.SetCentroidParam(evt.GetPosition())
+
+    def OnCentroidRangeMinSpinCtrl(self, evt):
+        self.presenter.SetCentroidRangeMinParam(evt.GetPosition())
+
+    def OnCentroidRangeMaxSpinCtrl(self, evt):
+        self.presenter.SetCentroidRangeMaxParam(evt.GetPosition())
 
     def OnRadioButton2DClicked(self, evt):
         self.presenter.Radio2DClicked(evt.IsChecked())

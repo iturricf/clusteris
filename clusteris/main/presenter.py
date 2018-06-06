@@ -10,6 +10,7 @@ from os.path import basename, splitext
 import numpy as np
 import pandas as pd
 import wx
+from sklearn.metrics import calinski_harabaz_score
 
 from config.view import ConfigView
 from config.interactor import Interactor as ConfigInteractor
@@ -165,21 +166,51 @@ class Presenter(object):
         procModule.append(importlib.import_module('processor.kmeans'))
         procModule.append(importlib.import_module('processor.genetic_plus'))
 
-        procClass = getattr(procModule[self.model.clusteringAlgorithm], className)
+        if self.model.clustersFixed:
+            procClass = getattr(procModule[self.model.clusteringAlgorithm], className)
 
-        processor = procClass({
-            'n_clusters': self.model.clusters,
-            'n_population': self.model.maxPopulation,
-            'n_iterations': self.model.maxIterations
-        })
+            processor = procClass({
+                'n_clusters': self.model.clusters,
+                'n_population': self.model.maxPopulation,
+                'n_iterations': self.model.maxIterations
+            })
 
-        time.sleep(0.2)
-        processor.SetListener(self)
+            time.sleep(0.2)
+            processor.SetListener(self)
 
-        processor.Fit(self.model.dataset)
+            processor.Fit(self.model.dataset)
 
-        self.result.labels = processor.GetLabels()
-        self.result.centroids = processor.GetCentroids()
+            self.result.labels = processor.GetLabels()
+            self.result.centroids = processor.GetCentroids()
+        else:
+            krange = []
+            score = []
+            rLabel = []
+            rCentroids = []
+            for i in range(self.model.clusters_range_min, self.model.clusters_range_max + 1):
+                procClass = getattr(procModule[self.model.clusteringAlgorithm], className)
+
+                processor = procClass({
+                    'n_clusters': i,
+                    'n_population': self.model.maxPopulation,
+                    'n_iterations': self.model.maxIterations
+                })
+
+                time.sleep(0.2)
+                processor.SetListener(self)
+
+                processor.Fit(self.model.dataset)
+
+                score.append(calinski_harabaz_score(self.model.dataset, processor.GetLabels()))
+                krange.append(i)
+                rLabel.append(processor.GetLabels())
+                rCentroids.append(processor.GetCentroids())
+
+        bestk = np.argmax(score)
+        self.view.ShowErrorMessage("La mejor clasificacion es k="+str(krange[bestk]))
+
+        self.result.labels = rLabel[bestk]
+        self.result.centroids = rCentroids[bestk]
 
         wx.CallAfter(self.view.ShowDataset, self.model.dataset, self.model.datasetColsNames, self.result.labels)
         wx.CallAfter(self.view.EnableExportMenus)

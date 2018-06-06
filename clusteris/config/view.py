@@ -50,6 +50,8 @@ class ConfigView(wx.Dialog):
 
         self.sizerMain.Add(self.panelAction, 0, wx.ALL|wx.EXPAND, 0)
 
+        self.HideVarClassesParameter()
+
         self.SetSizer(self.sizerMain)
         self.Layout()
 
@@ -133,8 +135,6 @@ class ConfigView(wx.Dialog):
 
         self.sbSizerProcess.Add(bSizerAlgorithm, 1, wx.ALL|wx.EXPAND, 0)
 
-        self.BuildParamsUI(self.sbSizerProcess)
-
         self.BuildPopulationUI(self.sbSizerProcess)
 
         self.BuildIterationUI(self.sbSizerProcess)
@@ -185,19 +185,6 @@ class ConfigView(wx.Dialog):
 
         container.Add(bSizerAction, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
 
-    def BuildParamsUI(self, container):
-        """Processing params."""
-        bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.labelCentroids = wx.StaticText(container.GetStaticBox(), wx.ID_ANY, u"Cantidad de Clases", wx.DefaultPosition, wx.DefaultSize, 0)
-        self.labelCentroids.Wrap(-1)
-        bSizerParamK.Add(self.labelCentroids, 1, wx.ALL, 10)
-
-        self.spinCentroidsParam = wx.SpinCtrl(container.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS)
-        bSizerParamK.Add(self.spinCentroidsParam, 1, wx.ALL, 5)
-
-        container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
-
     def BuildPopulationUI(self, container):
         """Processing params."""
         bSizerParamK = wx.BoxSizer(wx.HORIZONTAL)
@@ -225,10 +212,31 @@ class ConfigView(wx.Dialog):
         container.Add(bSizerParamK, 1, wx.ALL|wx.EXPAND, 0)
 
     def SetCentroidSpinRange(self, min, max):
-        self.spinCentroidsParam.SetRange(min, max)
+        self.spinFixedClassParam.SetRange(min, max)
 
     def SetCentroidSpinValue(self, value):
-        self.spinCentroidsParam.SetValue(value)
+        self.spinFixedClassParam.SetValue(value)
+
+    def GetCentroidSpinValue(self):
+        return self.spinFixedClassParam.GetValue()
+
+    def SetCentroidParamFromRange(self, min, max):
+        self.spinVarClassParamFrom.SetRange(min, max)
+
+    def SetCentroidParamFrom(self, value):
+        self.spinVarClassParamFrom.SetValue(value)
+
+    def GetCentroidParamFrom(self):
+        self.spinVarClassParamFrom.GetValue()
+
+    def SetCentroidParamToRange(self, min, max):
+        self.spinVarClassParamTo.SetRange(min, max)
+
+    def SetCentroidParamTo(self, value):
+        self.spinVarClassParamTo.SetValue(value)
+
+    def GetCentroidParamTo(self):
+        self.spinVarClassParamTo.GetValue()
 
     def SetLabelPopulationText(self, value):
         self.labelPopulation.SetLabel(value)
@@ -273,6 +281,15 @@ class ConfigView(wx.Dialog):
 
     def ShowFixedClassesParameter(self):
         self.spinFixedClassParam.Enable()
+
+    def getRadioFixedClassParam(self):
+        return self.radioFixedClassParam.GetValue()
+
+    def getspinVarClassParamFrom(self):
+        return self.spinVarClassParamFrom.GetValue()
+
+    def getspinVarClassParamTo(self):
+        return self.spinVarClassParamTo.GetValue()
 
     def SetAlgorithmList(self, value):
         self.choiceAlgorithm.SetItems(value)
