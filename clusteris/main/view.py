@@ -68,8 +68,8 @@ class MainView (wx.Frame):
         self.mItemProcess = wx.MenuItem(self.menuProcess, wx.ID_ANY, u"P&rocesar dataset"+ u"\t" + u"CTRL+r", wx.EmptyString, wx.ITEM_NORMAL)
         self.menuProcess.Append(self.mItemProcess)
 
-        self.mItemPlot = wx.MenuItem(self.menuProcess, wx.ID_ANY, u"&Graficar" + u"\t" + u"CTRL+g", wx.EmptyString, wx.ITEM_NORMAL)
-        self.menuProcess.Append(self.mItemPlot)
+        # self.mItemPlot = wx.MenuItem(self.menuProcess, wx.ID_ANY, u"&Graficar" + u"\t" + u"CTRL+g", wx.EmptyString, wx.ITEM_NORMAL)
+        # self.menuProcess.Append(self.mItemPlot)
 
         self.menubarMain.Append(self.menuProcess, u"&Procesamiento")
 

@@ -41,7 +41,7 @@ class Presenter(object):
 
         self.view.DisableExportMenus()
         self.view.DisableProcess()
-        self.view.DisablePlotMenu()
+        # self.view.DisablePlotMenu()
 
     def ShowFileDialog(self):
         self.view.ShowFileDialog()
@@ -154,6 +154,7 @@ class Presenter(object):
 
         threadProcess.join()
         print('DEBUG - Thread process detenido')
+        self.Plot()
 
     def _ProcessThread(self):
         className = self.params.CLUSTERING_PROCESSORS[self.model.clusteringAlgorithm]
@@ -182,7 +183,7 @@ class Presenter(object):
 
         wx.CallAfter(self.view.ShowDataset, self.model.dataset, self.model.datasetColsNames, self.result.labels)
         wx.CallAfter(self.view.EnableExportMenus)
-        wx.CallAfter(self.view.EnablePlotMenu)
+        # wx.CallAfter(self.view.EnablePlotMenu)
         wx.CallAfter(self.FinishProgress)
 
     def Plot(self):
