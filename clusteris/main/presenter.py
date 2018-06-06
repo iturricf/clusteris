@@ -206,11 +206,15 @@ class Presenter(object):
                 rLabel.append(processor.GetLabels())
                 rCentroids.append(processor.GetCentroids())
 
-        bestk = np.argmax(score)
-        self.view.ShowErrorMessage("La mejor clasificacion es k="+str(krange[bestk]))
+            bestk = np.argmax(score)
 
-        self.result.labels = rLabel[bestk]
-        self.result.centroids = rCentroids[bestk]
+            self.view.ShowErrorMessage("La mejor clasificacion es k="+str(krange[bestk]))
+
+            self.result.labels = rLabel[bestk]
+
+            # print(self.result.labels)
+            self.result.centroids = rCentroids[bestk]
+            self.model.clusters = krange[bestk]
 
         wx.CallAfter(self.view.ShowDataset, self.model.dataset, self.model.datasetColsNames, self.result.labels)
         wx.CallAfter(self.view.EnableExportMenus)
