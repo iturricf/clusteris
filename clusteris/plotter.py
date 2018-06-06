@@ -80,15 +80,9 @@ class Plotter(object):
         #     manager.resize(*manager.window.maxsize())
         # else:
         #     manager.window.state('zoomed')
-        g = manager.window.geometry()
-
 
         plt.legend()
         plt.show()
-
-
-
-        print("Width: %s" % g)
 
     def SaveTo(self, path):
         plt.savefig(path)
