@@ -2,6 +2,7 @@
 
 import csv
 import importlib
+import multiprocessing
 import threading
 import time
 
@@ -188,9 +189,14 @@ class Presenter(object):
     def Plot(self):
         print('DEBUG - Plot')
 
-        threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
-        threadPlotter.start()
+        # threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
+        # threadPlotter.start()
+        # time.sleep(1)
         # threadPlotter.join()
+
+        processPlotter = multiprocessing.Process(None, self._PlotThread)
+        processPlotter.start()
+        # processPlotter.join()
 
     def _PlotThread(self):
         plot = self.CreatePlot()

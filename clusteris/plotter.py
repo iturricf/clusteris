@@ -82,7 +82,6 @@ class Plotter(object):
         #     manager.window.state('zoomed')
         g = manager.window.geometry()
 
-
         plt.legend()
         plt.show(block=True)
 
