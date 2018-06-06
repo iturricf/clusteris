@@ -199,8 +199,6 @@ class Presenter(object):
         print('DEBUG - Antes de imprimir!!')
         plot.Show()
 
-        exit()
-
     def CreatePlot(self):
         clusters = 1 if self.model.clusteringAlgorithm == 0 else self.model.clusters
 
