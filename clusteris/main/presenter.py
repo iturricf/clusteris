@@ -154,6 +154,7 @@ class Presenter(object):
 
         threadProcess.join()
         print('DEBUG - Thread process detenido')
+        time.sleep(0.2)
         self.Plot()
 
     def _ProcessThread(self):
