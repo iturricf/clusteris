@@ -189,14 +189,11 @@ class Presenter(object):
     def Plot(self):
         print('DEBUG - Plot')
 
+        self._PlotThread()
         # threadPlotter = threading.Thread(name="Plotter", target=self._PlotThread)
         # threadPlotter.start()
         # time.sleep(1)
         # threadPlotter.join()
-
-        processPlotter = multiprocessing.Process(None, self._PlotThread)
-        processPlotter.start()
-        processPlotter.join()
 
     def _PlotThread(self):
         plot = self.CreatePlot()
