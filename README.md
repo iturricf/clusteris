@@ -22,6 +22,11 @@ Dentro del directorio clusteris
 
 ### Windows
 
+ * Instalar python v2.7.10 64bits (provisto con la documentación)
+ * Instalar wxPython
+ * Verificar que el interpreter python.exe y pip.exe esten en el path de ejecutables
+ * Instalar dependencias de la aplicación: `pip install -r requirements.txt`
+
 ## Ejecución
 
 ### Linux
@@ -31,3 +36,5 @@ Dentro del directorio clusteris
 ```python clusteris.py```
 
 ### Windows
+
+Ejecutar el lanzador clusteris.exe
