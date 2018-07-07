@@ -22,6 +22,10 @@ class Interactor(object):
 
         view.Bind(wx.EVT_CLOSE, self.OnExitClicked)
 
+        # Menu Ayuda
+        view.Bind(wx.EVT_MENU, self.OnHelpGetHelp, view.mItemHelp)
+        view.Bind(wx.EVT_MENU, self.OnHelpAbout, view.mItemAbout)
+
         view.Bind(view.EVT_FILE_SELECTED, self.OnFileSelected)
         view.Bind(view.EVT_EXPORT_CSV_FILE_SELECTED, self.OnExportCsvFileSelected)
         view.Bind(view.EVT_EXPORT_PNG_FILE_SELECTED, self.OnExportPngFileSelected)
@@ -47,6 +51,16 @@ class Interactor(object):
     def OnProcessDataset(self, evt):
         self.presenter.ShowDatasetConfigDialog()
         # self.presenter.Process()
+
+    def OnHelpGetHelp(self, evt):
+        wx.BeginBusyCursor()
+        import webbrowser
+        webbrowser.open("https://github.com/iturricf/clusteris/wiki/How-to-use-Clusteris")
+        wx.EndBusyCursor()
+
+    def OnHelpAbout(self, evt):
+        box = wx.MessageDialog(None, 'ClusteRIS v1.0 \nAplicación desarrollada para lograr el agrupamiento de datos mediante la técnica de algoritmos genéticos. \n\n Autores: Iturri Cristian, Ramírez Karina y Silva José.', 'Acerca de CluteRIS', wx.OK)
+        box.ShowModal()
 
     def OnPlotResults(self, evt):
         self.presenter.Plot()
