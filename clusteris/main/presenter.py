@@ -16,6 +16,10 @@ from config.view import ConfigView
 from config.interactor import Interactor as ConfigInteractor
 from config.presenter import Presenter as ConfigPresenter
 
+from plotter_config.view import PlotterConfigView
+from plotter_config.interactor import PlotterConfigInteractor
+from plotter_config.presenter import PlotterConfigPresenter
+
 from model import Results
 from plotter import Plotter
 
@@ -133,6 +137,18 @@ class Presenter(object):
         else:
             print('DEBUG - CANCELLED')
 
+    def ShowPlotConfigDialog(self):
+        print('DEBUG - ShowPlotterConfigDialog')
+
+        view = PlotterConfigView(self.view)
+        interactor = PlotterConfigInteractor()
+        presenter = PlotterConfigPresenter(view, interactor, self.model)
+
+        if (presenter.Start()):
+            self.Plot()
+        else:
+            print('DEBUG - CANCELLED')
+
     def SetMaxRange(self, maxRange):
         print('DEBUG - Seteando rango')
         self.view.AdjustProgressRange(maxRange)
@@ -155,7 +171,6 @@ class Presenter(object):
 
         threadProcess.join()
         print('DEBUG - Thread process detenido')
-        self.Plot()
 
     def _ProcessThread(self):
         className = self.params.CLUSTERING_PROCESSORS[self.model.clusteringAlgorithm]
