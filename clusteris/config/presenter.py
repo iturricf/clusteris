@@ -91,6 +91,10 @@ class Presenter(object):
         self.view.EndModal(False)
 
     def Process(self):
+        if (self.localModel.clusteringAlgorithm == 0):
+            self.view.ShowErrorMessage("Seleccione un algoritmo.")
+            return false
+
         # Si eligio rango de clases, verificamos que el rango sea valido
         if self.view.getRadioFixedClassParam() is False:
             if self.view.getspinVarClassParamFrom() >= self.view.getspinVarClassParamTo():

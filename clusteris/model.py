@@ -20,7 +20,7 @@ class Params():
 
     DATASET_PARSE_FEATURES_DEFAULT_VALUE = False
 
-    CLUSTERING_ALGORITHMS = [u"Solo gráfico", u"K-means", u"Algoritmo Genético"]
+    CLUSTERING_ALGORITHMS = [u"Elegir", u"K-means", u"Algoritmo Genético"]
     CLUSTERING_PROCESSORS = ['Dummy', 'KMeans', 'Genetic']
 
     CLUSTERING_ALGORITHM_DEFAULT = 0
