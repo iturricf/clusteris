@@ -18,7 +18,7 @@ class Interactor(object):
 
         # Menu Proceso
         view.Bind(wx.EVT_MENU, self.OnProcessDataset, view.mItemProcess)
-        # view.Bind(wx.EVT_MENU, self.OnPlotResults, view.mItemPlot)
+        view.Bind(wx.EVT_MENU, self.OnPlotResults, view.mItemPlot)
 
         view.Bind(wx.EVT_CLOSE, self.OnExitClicked)
 
@@ -49,7 +49,8 @@ class Interactor(object):
         # self.presenter.Process()
 
     def OnPlotResults(self, evt):
-        self.presenter.Plot()
+        self.presenter.ShowPlotConfigDialog()
+        # self.presenter.Plot()
 
     def OnExitClicked(self, evt):
         self.presenter.Close()
