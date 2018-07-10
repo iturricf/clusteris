@@ -23,6 +23,8 @@ from plotter_config.presenter import PlotterConfigPresenter
 from model import Results
 from plotter import Plotter
 
+from processor.dummy import Dummy
+
 class Presenter(object):
     """
     Process UI events and updates view with results.
@@ -46,7 +48,7 @@ class Presenter(object):
 
         self.view.DisableExportMenus()
         self.view.DisableProcess()
-        # self.view.DisablePlotMenu()
+        self.view.DisablePlotMenu()
 
     def ShowFileDialog(self):
         self.view.ShowFileDialog()
@@ -84,8 +86,11 @@ class Presenter(object):
             self.view.SetStatusBarText("HEADERS: %s" % ("NO" if parseHeader is None else "SI"), 3)
 
             self.view.EnableProcess()
+            self.view.EnablePlotMenu()
+
 
             self.model.colsForAxes = range(3)
+            self.model.clusteringAlgorithm = 0
             self.model.clusters = 1
 
             ## Dataset Processing
@@ -99,6 +104,7 @@ class Presenter(object):
             # Convert DataFrame columns into Numpy Array
             self.model.dataset = np.array(list(zip(*samples)))
             self._ShowDatasetAsTable()
+            self.result = Results()
 
         except IOError:
             self.view.ShowErrorMessage("Error al abrir el archivo '%s'." % self.model.datasetPath)
@@ -162,7 +168,7 @@ class Presenter(object):
         self.view.DestroyProgressDialog()
 
     def Process(self):
-        self.result = Results()
+        # self.result = Results()
 
         threadProcess = threading.Thread(name="Clustering", target=self._ProcessThread)
         threadProcess.start()
@@ -233,11 +239,22 @@ class Presenter(object):
 
         wx.CallAfter(self.view.ShowDataset, self.model.dataset, self.model.datasetColsNames, self.result.labels)
         wx.CallAfter(self.view.EnableExportMenus)
-        # wx.CallAfter(self.view.EnablePlotMenu)
         wx.CallAfter(self.FinishProgress)
 
     def Plot(self):
         print('DEBUG - Plot')
+
+        if (self.model.clusteringAlgorithm == 0):
+            processor = Dummy({
+                'n_clusters': self.model.clusters,
+            })
+
+            processor.SetListener(self)
+
+            processor.Fit(self.model.dataset)
+
+            self.result.labels = processor.GetLabels()
+            self.result.centroids = processor.GetCentroids()
 
         self._PlotThread()
 
